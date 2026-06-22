@@ -9,5 +9,5 @@ export interface Project {
 export declare class ProjectsService {
     private projects;
     findAll(): Project[];
-    findOne(id: string): Project;
+    findOne(id: string): Project | undefined;
 }

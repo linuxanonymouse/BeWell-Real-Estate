@@ -1,4 +1,5 @@
-import { TeamService, TeamMember } from './team.service';
+import { TeamService } from './team.service';
+import type { TeamMember } from './team.service';
 export declare class TeamController {
     private readonly teamService;
     constructor(teamService: TeamService);

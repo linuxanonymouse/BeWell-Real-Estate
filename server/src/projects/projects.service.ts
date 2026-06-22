@@ -23,7 +23,7 @@ export class ProjectsService {
     return this.projects;
   }
 
-  findOne(id: string): Project {
+  findOne(id: string): Project | undefined {
     return this.projects.find(p => p.id === id);
   }
 }

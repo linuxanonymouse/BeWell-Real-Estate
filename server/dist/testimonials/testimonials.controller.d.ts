@@ -1,4 +1,5 @@
-import { TestimonialsService, Testimonial } from './testimonials.service';
+import { TestimonialsService } from './testimonials.service';
+import type { Testimonial } from './testimonials.service';
 export declare class TestimonialsController {
     private readonly testimonialsService;
     constructor(testimonialsService: TestimonialsService);

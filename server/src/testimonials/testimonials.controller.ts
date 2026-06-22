@@ -1,5 +1,6 @@
 import { Controller, Get, Post, Put, Delete, Param, Body } from '@nestjs/common';
-import { TestimonialsService, Testimonial } from './testimonials.service';
+import { TestimonialsService } from './testimonials.service';
+import type { Testimonial } from './testimonials.service';
 
 @Controller('testimonials')
 export class TestimonialsController {

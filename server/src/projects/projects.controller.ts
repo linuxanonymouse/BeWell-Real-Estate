@@ -1,5 +1,6 @@
 import { Controller, Get, Param } from '@nestjs/common';
-import { ProjectsService, Project } from './projects.service';
+import { ProjectsService } from './projects.service';
+import type { Project } from './projects.service';
 
 @Controller('projects')
 export class ProjectsController {
@@ -11,7 +12,7 @@ export class ProjectsController {
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string): Project {
+  findOne(@Param('id') id: string): Project | undefined {
     return this.projectsService.findOne(id);
   }
 }

@@ -1,5 +1,6 @@
 import { Controller, Get, Post, Put, Delete, Param, Body } from '@nestjs/common';
-import { TeamService, TeamMember } from './team.service';
+import { TeamService } from './team.service';
+import type { TeamMember } from './team.service';
 
 @Controller('team')
 export class TeamController {
