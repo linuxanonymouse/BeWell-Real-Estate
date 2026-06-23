@@ -196,7 +196,7 @@ export default function Home() {
           className="absolute inset-0 w-full h-full z-0"
         >
           <video 
-            src="/hero.mp4" 
+            src="/Hero.mp4" 
             autoPlay 
             loop 
             muted 
