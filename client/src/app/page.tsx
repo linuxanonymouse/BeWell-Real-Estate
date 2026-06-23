@@ -223,11 +223,11 @@ export default function Home() {
             We don't just build buildings, we build legacies.
           </motion.p>
 
-          <motion.div variants={fadeUp} className="mt-16 md:mt-16 flex flex-wrap gap-4">
-            <a href="#06" onClick={(e) => { e.preventDefault(); document.getElementById('06')?.scrollIntoView({ behavior: 'smooth' }); }} className="px-6 md:px-8 py-3 md:py-4 bg-[#c09b62] text-black text-[8px] sm:text-[10px] tracking-[0.25em] uppercase hover:bg-[#d4b075] hover:shadow-[0_0_25px_rgba(192,155,98,0.6)] transition-all duration-500 font-sans font-medium shadow-[0_0_15px_rgba(192,155,98,0.3)] text-center">
+          <motion.div variants={fadeUp} className="mt-16 md:mt-16 flex flex-row items-center gap-4">
+            <a href="#06" onClick={(e) => { e.preventDefault(); document.getElementById('06')?.scrollIntoView({ behavior: 'smooth' }); }} className="inline-flex items-center justify-center px-6 md:px-8 py-3.5 md:py-4 bg-[#c09b62] text-black text-[10px] sm:text-xs tracking-[0.25em] uppercase no-underline appearance-none transition-all duration-500 font-sans font-medium shadow-[0_0_15px_rgba(192,155,98,0.3)] rounded-none">
               Explore Portfolio
             </a>
-            <a href="#04" onClick={(e) => { e.preventDefault(); document.getElementById('04')?.scrollIntoView({ behavior: 'smooth' }); }} className="px-6 md:px-8 py-3 md:py-4 border border-white/30 text-white text-[8px] sm:text-[10px] tracking-[0.25em] uppercase hover:bg-white/10 hover:border-white transition-all duration-500 font-sans backdrop-blur-sm bg-black/20 text-center">
+            <a href="#04" onClick={(e) => { e.preventDefault(); document.getElementById('04')?.scrollIntoView({ behavior: 'smooth' }); }} className="inline-flex items-center justify-center px-6 md:px-8 py-3.5 md:py-4 border border-white/30 text-white text-[10px] sm:text-xs tracking-[0.25em] uppercase no-underline appearance-none transition-all duration-500 font-sans bg-black/20 rounded-none">
               Our Vision
             </a>
           </motion.div>
