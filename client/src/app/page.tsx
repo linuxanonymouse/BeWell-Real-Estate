@@ -6,7 +6,7 @@ import { useEffect, useState, useRef } from "react";
 // Animation Variants
 const fadeUp = {
   hidden: { opacity: 0, y: 40 },
-  visible: { opacity: 1, y: 0, transition: { duration: 1, ease: "easeOut" } }
+  visible: { opacity: 1, y: 0, transition: { duration: 1, ease: "easeOut" as any } }
 };
 
 const staggerContainer = {
@@ -192,7 +192,7 @@ export default function Home() {
         <motion.div 
           initial={{ scale: 1.05 }}
           animate={{ scale: 1 }}
-          transition={{ duration: 2, ease: "easeOut" }}
+          transition={{ duration: 2, ease: "easeOut" as any }}
           className="absolute inset-0 w-full h-full z-0"
         >
           <video 
@@ -253,7 +253,7 @@ export default function Home() {
             initial={{ scale: 1.15, opacity: 0.5 }}
             whileInView={{ scale: 1, opacity: 1 }}
             viewport={{ once: true, margin: "-100px" }}
-            transition={{ duration: 1.8, ease: "easeOut" }}
+            transition={{ duration: 1.8, ease: "easeOut" as any }}
             src="/interior.png" 
             alt="Luxury Interiors" 
             className="w-full h-full object-cover" 
@@ -295,7 +295,7 @@ export default function Home() {
             initial={{ scale: 1.15, opacity: 0.5 }}
             whileInView={{ scale: 1, opacity: 1 }}
             viewport={{ once: true, margin: "-100px" }}
-            transition={{ duration: 1.8, ease: "easeOut" }}
+            transition={{ duration: 1.8, ease: "easeOut" as any }}
             src="/amenities.png" 
             alt="Luxury Amenities" 
             className="w-full h-full object-cover" 
@@ -373,7 +373,7 @@ export default function Home() {
               <motion.div 
                 initial={{ opacity: 0, x: 50 }}
                 whileInView={{ opacity: 1, x: 0 }}
-                transition={{ delay: i * 0.15, duration: 0.8, ease: "easeOut" }}
+                transition={{ delay: i * 0.15, duration: 0.8, ease: "easeOut" as any }}
                 viewport={{ once: true }}
                 key={leader.name} 
                 className="min-w-[200px] sm:min-w-[240px] flex-shrink-0 group cursor-pointer snap-start"
@@ -417,7 +417,7 @@ export default function Home() {
           <motion.div 
             initial={{ scale: 0.9, opacity: 0 }}
             whileInView={{ scale: 1, opacity: 1 }}
-            transition={{ duration: 1.2, ease: "easeOut" }}
+            transition={{ duration: 1.2, ease: "easeOut" as any }}
             viewport={{ once: true }}
             className="flex justify-center"
           >
@@ -429,7 +429,7 @@ export default function Home() {
           <motion.div 
             initial={{ opacity: 0, x: 30 }}
             whileInView={{ opacity: 1, x: 0 }}
-            transition={{ duration: 1.2, delay: 0.3, ease: "easeOut" }}
+            transition={{ duration: 1.2, delay: 0.3, ease: "easeOut" as any }}
             viewport={{ once: true }}
             className="pl-0 lg:pl-12 border-l-0 lg:border-l border-white/10"
           >
@@ -485,7 +485,7 @@ export default function Home() {
             <motion.div 
               initial={{ opacity: 0, y: 60 }}
               whileInView={{ opacity: 1, y: 0 }}
-              transition={{ delay: i * 0.1, duration: 1, ease: "easeOut" }}
+              transition={{ delay: i * 0.1, duration: 1, ease: "easeOut" as any }}
               viewport={{ once: true, margin: "-50px" }}
               key={project.name} 
               className="group cursor-pointer relative aspect-[3/4] overflow-hidden border border-white/5 shadow-lg hover:shadow-[0_0_30px_rgba(192,155,98,0.2)] transition-shadow duration-500"
@@ -517,7 +517,7 @@ export default function Home() {
           <motion.div 
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 1.2, ease: "easeOut" }}
+            transition={{ duration: 1.2, ease: "easeOut" as any }}
             viewport={{ once: true }}
             className="text-center mb-20 md:mb-32"
           >
