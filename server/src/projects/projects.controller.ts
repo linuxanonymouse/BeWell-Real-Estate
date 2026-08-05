@@ -1,6 +1,6 @@
 import { Controller, Get, Post, Put, Delete, Param, Body, UseGuards } from '@nestjs/common';
 import { ProjectsService } from './projects.service';
-import type { Project } from './projects.service';
+import type { ProjectDto } from './projects.service';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 
 @Controller('projects')
@@ -8,30 +8,30 @@ export class ProjectsController {
   constructor(private readonly projectsService: ProjectsService) {}
 
   @Get()
-  findAll(): Project[] {
+  async findAll(): Promise<ProjectDto[]> {
     return this.projectsService.findAll();
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string): Project | undefined {
+  async findOne(@Param('id') id: string): Promise<ProjectDto | undefined> {
     return this.projectsService.findOne(id);
   }
 
   @UseGuards(JwtAuthGuard)
   @Post()
-  create(@Body() project: Omit<Project, 'id'>): Project {
+  async create(@Body() project: Omit<ProjectDto, 'id'>): Promise<ProjectDto> {
     return this.projectsService.create(project);
   }
 
   @UseGuards(JwtAuthGuard)
   @Put(':id')
-  update(@Param('id') id: string, @Body() data: Partial<Project>): Project | undefined {
+  async update(@Param('id') id: string, @Body() data: Partial<ProjectDto>): Promise<ProjectDto | undefined> {
     return this.projectsService.update(id, data);
   }
 
   @UseGuards(JwtAuthGuard)
   @Delete(':id')
-  delete(@Param('id') id: string): { deleted: boolean } {
-    return { deleted: this.projectsService.delete(id) };
+  async delete(@Param('id') id: string): Promise<{ deleted: boolean }> {
+    return { deleted: await this.projectsService.delete(id) };
   }
 }

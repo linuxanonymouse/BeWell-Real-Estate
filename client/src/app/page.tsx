@@ -66,9 +66,9 @@ export default function Home() {
     async function fetchData() {
       try {
         const [contentRes, projectsRes, teamRes] = await Promise.all([
-          fetch("http://localhost:3001/site-content"),
-          fetch("http://localhost:3001/projects"),
-          fetch("http://localhost:3001/team")
+          fetch(process.env.NEXT_PUBLIC_API_URL + "/site-content"),
+          fetch(process.env.NEXT_PUBLIC_API_URL + "/projects"),
+          fetch(process.env.NEXT_PUBLIC_API_URL + "/team")
         ]);
         
         if (contentRes.ok) {
@@ -188,7 +188,7 @@ export default function Home() {
               <motion.div key={leader.id} initial={{ opacity: 0, x: 50 }} whileInView={{ opacity: 1, x: 0 }} transition={{ delay: i * 0.15, duration: 0.8 }} viewport={{ once: true }} className="w-[200px] sm:w-[240px] min-w-[200px] sm:min-w-[240px] flex-shrink-0 group cursor-pointer snap-start">
                 <div className="aspect-[3/4] bg-[#1a1510]/80 backdrop-blur-sm border border-white/5 group-hover:border-[#c09b62] transition-all duration-700 mb-6 relative overflow-hidden flex items-center justify-center group-hover:shadow-[0_0_40px_rgba(192,155,98,0.2)] rounded-lg">
                   {leader.image ? (
-                    <img src={leader.image.startsWith('http') ? leader.image : `http://localhost:3001${leader.image.startsWith('/') ? '' : '/'}${leader.image}`} alt={leader.name} className="w-full h-full object-cover opacity-80 group-hover:opacity-100 group-hover:scale-105 transition-all duration-700" />
+                    <img src={leader.image.startsWith('http') ? leader.image : `${process.env.NEXT_PUBLIC_API_URL}${leader.image.startsWith('/') ? '' : '/'}${leader.image}`} alt={leader.name} className="w-full h-full object-cover opacity-80 group-hover:opacity-100 group-hover:scale-105 transition-all duration-700" />
                   ) : (
                     <>
                       <div className="absolute inset-0 bg-gradient-to-tr from-[#0d0a08] to-[#1a1510] group-hover:from-[#14100c] group-hover:to-[#1f1a12] transition-all duration-700" />

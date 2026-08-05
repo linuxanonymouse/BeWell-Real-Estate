@@ -1,4 +1,5 @@
-import { Controller, Post, UseInterceptors, UploadedFile, UseGuards } from '@nestjs/common';
+import { Controller, Post, UseInterceptors, UploadedFile, UseGuards, Req } from '@nestjs/common';
+import type { Request } from 'express';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { extname } from 'path';
@@ -18,9 +19,9 @@ export class UploadController {
       }
     })
   }))
-  uploadFile(@UploadedFile() file: Express.Multer.File) {
+  uploadFile(@UploadedFile() file: Express.Multer.File, @Req() req: Request) {
     return {
-      url: `http://localhost:3001/uploads/${file.filename}`
+      url: `${req.protocol}://${req.get('host')}/uploads/${file.filename}`
     };
   }
 }

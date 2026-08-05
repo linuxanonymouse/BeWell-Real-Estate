@@ -12,8 +12,11 @@ import { SiteContentModule } from './site-content/site-content.module';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
 
+import { MongooseModule } from '@nestjs/mongoose';
+
 @Module({
   imports: [
+    MongooseModule.forRoot(process.env.MONGO_URI || 'mongodb://localhost:27027/bewell'),
     ServeStaticModule.forRoot({
       rootPath: join(__dirname, '..', 'uploads'),
       serveRoot: '/uploads',

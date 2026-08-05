@@ -1,6 +1,6 @@
 import { Controller, Get, Post, Put, Delete, Param, Body, UseGuards } from '@nestjs/common';
 import { LeadsService } from './leads.service';
-import type { Lead } from './leads.service';
+import type { LeadDto } from './leads.service';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 
 @Controller('leads')
@@ -9,31 +9,30 @@ export class LeadsController {
 
   @UseGuards(JwtAuthGuard)
   @Get()
-  findAll(): Lead[] {
+  async findAll(): Promise<LeadDto[]> {
     return this.leadsService.findAll();
   }
 
   @UseGuards(JwtAuthGuard)
   @Get(':id')
-  findOne(@Param('id') id: string): Lead | undefined {
+  async findOne(@Param('id') id: string): Promise<LeadDto | undefined> {
     return this.leadsService.findOne(id);
   }
 
-  // Allow unauthenticated POST for contact forms/AI chat
   @Post()
-  create(@Body() lead: Omit<Lead, 'id' | 'status' | 'createdAt'>): Lead {
-    return this.leadsService.create({ ...lead, status: 'New' });
+  async create(@Body() lead: Omit<LeadDto, 'id'>): Promise<LeadDto> {
+    return this.leadsService.create(lead);
   }
 
   @UseGuards(JwtAuthGuard)
-  @Put(':id/status')
-  updateStatus(@Param('id') id: string, @Body() body: { status: Lead['status'] }): Lead | undefined {
-    return this.leadsService.updateStatus(id, body.status);
+  @Put(':id')
+  async update(@Param('id') id: string, @Body() data: Partial<LeadDto>): Promise<LeadDto | undefined> {
+    return this.leadsService.update(id, data);
   }
 
   @UseGuards(JwtAuthGuard)
   @Delete(':id')
-  delete(@Param('id') id: string): { deleted: boolean } {
-    return { deleted: this.leadsService.delete(id) };
+  async delete(@Param('id') id: string): Promise<{ deleted: boolean }> {
+    return { deleted: await this.leadsService.delete(id) };
   }
 }

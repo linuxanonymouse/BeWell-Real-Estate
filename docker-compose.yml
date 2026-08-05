@@ -1,0 +1,38 @@
+version: '3.8'
+services:
+  mongodb:
+    image: mongo:latest
+    container_name: bewell_mongodb
+    ports:
+      - "27027:27017"
+    volumes:
+      - bewell_mongo_data:/data/db
+
+  backend:
+    build:
+      context: ./server
+    container_name: bewell_backend
+    ports:
+      - "7346:3001"
+    environment:
+      - MONGO_URI=mongodb://mongodb:27017/bewell
+      - JWT_SECRET=BewellSuperSecretKey2026
+    volumes:
+      - ./server/uploads:/app/uploads
+      - ./server/data:/app/data
+    depends_on:
+      - mongodb
+
+  frontend:
+    build:
+      context: ./client
+    container_name: bewell_frontend
+    ports:
+      - "7345:3000"
+    environment:
+      - NEXT_PUBLIC_API_URL=http://localhost:7346
+    depends_on:
+      - backend
+
+volumes:
+  bewell_mongo_data:

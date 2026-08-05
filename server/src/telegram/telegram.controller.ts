@@ -24,8 +24,8 @@ ${data.message}
 
   @UseGuards(JwtAuthGuard)
   @Get('settings')
-  getSettings() {
-    const settings = this.telegramService.getSettings();
+  async getSettings() {
+    const settings = await this.telegramService.getSettings();
     return {
       token: settings.token ? '***' + settings.token.slice(-4) : '',
       chatId: settings.chatId
@@ -34,7 +34,7 @@ ${data.message}
 
   @UseGuards(JwtAuthGuard)
   @Put('settings')
-  updateSettings(@Body() body: { token: string, chatId: string }) {
+  async updateSettings(@Body() body: { token: string, chatId: string }) {
     return this.telegramService.updateSettings(body.token, body.chatId);
   }
 

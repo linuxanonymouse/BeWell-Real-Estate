@@ -1,10 +1,12 @@
 import { Injectable, Logger, OnModuleInit, Inject, forwardRef } from '@nestjs/common';
+import { InjectModel } from '@nestjs/mongoose';
+import { Model } from 'mongoose';
 import { ProjectsService } from '../projects/projects.service';
 import { LeadsService } from '../leads/leads.service';
+import { TelegramSettings, TelegramSettingsDocument } from './telegram.schema';
 
 const TelegramBot = require('node-telegram-bot-api');
 
-// Conversational state map
 type ChatState = 'IDLE' | 'AWAITING_NAME' | 'AWAITING_EMAIL' | 'AWAITING_PHONE' | 'AWAITING_MESSAGE';
 
 @Injectable()
@@ -12,18 +14,25 @@ export class TelegramService implements OnModuleInit {
   private readonly logger = new Logger(TelegramService.name);
   private bot: any;
   private chatId: string = process.env.TELEGRAM_CHAT_ID || '';
-  // Hardcoded the bot token from the user for now to ensure it works
   private token: string = process.env.TELEGRAM_BOT_TOKEN || '8866256032:AAFMVoEvMYURWWxeJS5zg24FIn7bz_9-4Vc';
   
   private userStates = new Map<number, { state: ChatState, data: any }>();
 
   constructor(
+    @InjectModel(TelegramSettings.name) private telegramModel: Model<TelegramSettingsDocument>,
     private readonly projectsService: ProjectsService,
     @Inject(forwardRef(() => LeadsService))
     private readonly leadsService: LeadsService
   ) {}
 
-  onModuleInit() {
+  async onModuleInit() {
+    let settings = await this.telegramModel.findOne().exec();
+    if (!settings) {
+      settings = await new this.telegramModel({ token: this.token, chatId: this.chatId }).save();
+    } else {
+      if (settings.token) this.token = settings.token;
+      if (settings.chatId) this.chatId = settings.chatId;
+    }
     this.initializeBot();
   }
 
@@ -34,6 +43,9 @@ export class TelegramService implements OnModuleInit {
       return;
     }
     try {
+      if (this.bot) {
+        this.bot.stopPolling();
+      }
       this.bot = new TelegramBot(this.token, { polling: true });
       this.logger.log('Telegram bot initialized with polling enabled.');
       this.setupHandlers();
@@ -48,12 +60,11 @@ export class TelegramService implements OnModuleInit {
       const chatId = msg.chat.id;
       const text = msg.text || '';
       
-      // Always store chatId globally as admin if they send a message to it
       if (!this.chatId) {
           this.chatId = chatId.toString();
+          await this.saveSettings();
       }
 
-      // Handle commands first
       if (text === '/start') {
         this.userStates.set(chatId, { state: 'IDLE', data: {} });
         return this.sendMainMenu(chatId);
@@ -68,13 +79,11 @@ export class TelegramService implements OnModuleInit {
         return this.startConsultation(chatId);
       }
 
-      // Handle conversational state
       const userSession = this.userStates.get(chatId);
       if (userSession && userSession.state !== 'IDLE') {
         return this.handleConversationalState(chatId, text, userSession);
       }
 
-      // Default fallback
       if (!text.startsWith('/')) {
         this.bot.sendMessage(chatId, "I didn't understand that. Type /start to see what I can do.");
       }
@@ -108,8 +117,8 @@ export class TelegramService implements OnModuleInit {
     this.bot.sendMessage(chatId, welcomeText, options);
   }
 
-  private sendProjects(chatId: number) {
-    const projects = this.projectsService.findAll();
+  private async sendProjects(chatId: number) {
+    const projects = await this.projectsService.findAll();
     let text = '<b>Our Signature Portfolio</b> 🏗️\n\n';
     
     projects.forEach((p, idx) => {
@@ -158,8 +167,7 @@ export class TelegramService implements OnModuleInit {
         session.data.message = text;
         session.state = 'IDLE';
         
-        // Save to CRM
-        const newLead = this.leadsService.create({
+        await this.leadsService.create({
           name: session.data.name,
           email: session.data.email,
           phone: session.data.phone || 'Not provided',
@@ -173,18 +181,31 @@ export class TelegramService implements OnModuleInit {
     }
   }
 
-  getSettings() {
+  async getSettings() {
+    let doc = await this.telegramModel.findOne().exec();
     return {
-      token: this.token,
-      chatId: this.chatId
+      token: doc?.token || this.token,
+      chatId: doc?.chatId || this.chatId
     };
   }
 
-  updateSettings(token: string, chatId: string) {
+  async updateSettings(token: string, chatId: string) {
     this.token = token;
     this.chatId = chatId;
+    await this.saveSettings();
     this.initializeBot();
     return this.getSettings();
+  }
+  
+  private async saveSettings() {
+    let doc = await this.telegramModel.findOne().exec();
+    if (!doc) {
+      await new this.telegramModel({ token: this.token, chatId: this.chatId }).save();
+    } else {
+      doc.token = this.token;
+      doc.chatId = this.chatId;
+      await doc.save();
+    }
   }
 
   async sendNotification(message: string): Promise<boolean> {

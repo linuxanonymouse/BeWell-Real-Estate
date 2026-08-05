@@ -21,7 +21,7 @@ export default function AdminLeads() {
 
   const fetchLeads = async () => {
     try {
-      const res = await fetch("http://localhost:3001/leads", {
+      const res = await fetch(process.env.NEXT_PUBLIC_API_URL + "/leads", {
         headers: getAuthHeader()
       });
       if (res.ok) {
@@ -39,7 +39,7 @@ export default function AdminLeads() {
 
   const updateStatus = async (id: string, newStatus: string) => {
     try {
-      await fetch(`http://localhost:3001/leads/${id}/status`, {
+      await fetch(`${process.env.NEXT_PUBLIC_API_URL}/leads/${id}/status`, {
         method: "PUT",
         headers: { "Content-Type": "application/json", ...getAuthHeader() },
         body: JSON.stringify({ status: newStatus }),

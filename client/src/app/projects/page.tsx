@@ -49,7 +49,7 @@ export default function ProjectsPage() {
   useEffect(() => {
     async function fetchProjects() {
       try {
-        const res = await fetch("http://localhost:3001/projects");
+        const res = await fetch(process.env.NEXT_PUBLIC_API_URL + "/projects");
         const data = await res.json();
         if (Array.isArray(data)) {
           setProjects(data);
