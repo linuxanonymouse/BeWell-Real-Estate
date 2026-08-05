@@ -100,7 +100,7 @@ export default function AdminLayout({
         <div className="hidden md:block mb-12">
           <Link href="/">
             <h1 className="text-xl font-serif tracking-widest uppercase text-white hover:text-[#c09b62] transition-colors">
-              Be Well <span className="text-[#c09b62] italic block text-sm mt-1">Admin Portal</span>
+              BWell <span className="text-[#c09b62] italic block text-sm mt-1">Admin Portal</span>
             </h1>
           </Link>
         </div>

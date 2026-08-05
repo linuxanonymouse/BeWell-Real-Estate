@@ -73,7 +73,7 @@ export default function AdminDashboard() {
     <div className="flex flex-col gap-8 pb-12">
       <div>
         <h2 className="text-3xl font-serif text-white tracking-wider uppercase">Overview</h2>
-        <p className="text-zinc-500 font-sans mt-2">Welcome back to the Be Well Admin Portal.</p>
+        <p className="text-zinc-500 font-sans mt-2">Welcome back to the BWell Admin Portal.</p>
       </div>
       
       {/* KPI Grid */}
