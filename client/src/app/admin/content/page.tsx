@@ -8,16 +8,33 @@ export default function AdminSiteContent() {
   const [content, setContent] = useState<any>(null);
   const [status, setStatus] = useState<'idle' | 'saving' | 'success' | 'error'>('idle');
 
+  const defaultContent = {
+    hero: { titleLine1: "", titleLine2: "", titleHighlight: "", subtitle: "" },
+    projectsSection: { titleLine1: "", titleLine2: "", titleHighlight: "", subtitle: "" },
+    certifications: { titleLine1: "", titleLine2: "", titleHighlight: "", subtitle: "", quote: "", quoteAuthor: "" },
+    footer: { titleLine1: "", titleLine2: "", titleHighlight: "", description: "", email: "", phone: "", location: "" }
+  };
+
   useEffect(() => {
     async function fetchContent() {
       try {
         const res = await fetch("/api/site-content", { cache: "no-store" });
         if (res.ok) {
           const data = await res.json();
-          setContent(data);
+          setContent({
+            ...defaultContent,
+            ...data,
+            hero: { ...defaultContent.hero, ...(data?.hero || {}) },
+            projectsSection: { ...defaultContent.projectsSection, ...(data?.projectsSection || {}) },
+            certifications: { ...defaultContent.certifications, ...(data?.certifications || {}) },
+            footer: { ...defaultContent.footer, ...(data?.footer || {}) },
+          });
+        } else {
+          setContent(defaultContent);
         }
       } catch (error) {
         console.error("Failed to fetch site content", error);
+        setContent(defaultContent);
       }
     }
     fetchContent();
