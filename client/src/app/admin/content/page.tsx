@@ -9,10 +9,10 @@ export default function AdminSiteContent() {
   const [status, setStatus] = useState<'idle' | 'saving' | 'success' | 'error'>('idle');
 
   const defaultContent = {
-    hero: { titleLine1: "", titleLine2: "", titleHighlight: "", subtitle: "" },
-    projectsSection: { titleLine1: "", titleLine2: "", titleHighlight: "", subtitle: "" },
-    certifications: { titleLine1: "", titleLine2: "", titleHighlight: "", subtitle: "", quote: "", quoteAuthor: "" },
-    footer: { titleLine1: "", titleLine2: "", titleHighlight: "", description: "", email: "", phone: "", location: "" }
+    hero: { titleLine1: "Building", titleLine2: "Beyond", titleHighlight: "Imagination", subtitle: "We don't just build buildings, we build legacies." },
+    projectsSection: { titleLine1: "Iconic Projects", titleLine2: "That Define", titleHighlight: "Tomorrow", subtitle: "Explore our signature projects across prime locations." },
+    certifications: { titleLine1: "Trusted By", titleLine2: "Those Who", titleHighlight: "Know Excellence", subtitle: "Our commitment to quality and timely delivery has earned us the trust of industry leaders.", quote: "\"Their dedication, professionalism, and exceptional execution have made them our most trusted development partner.\"", quoteAuthor: "CEO, MVP Developers" },
+    footer: { titleLine1: "Let's Build", titleLine2: "The Future", titleHighlight: "Together", description: "Building more than structures, we build trust, relationships, and a better tomorrow.", email: "info@bewell.com", phone: "+251 912 345 6789", location: "Addis Ababa" }
   };
 
   useEffect(() => {
