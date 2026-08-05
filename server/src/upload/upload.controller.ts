@@ -21,7 +21,7 @@ export class UploadController {
   }))
   uploadFile(@UploadedFile() file: Express.Multer.File, @Req() req: Request) {
     return {
-      url: `${req.protocol}://${req.get('host')}/uploads/${file.filename}`
+      url: `/uploads/${file.filename}`
     };
   }
 }
