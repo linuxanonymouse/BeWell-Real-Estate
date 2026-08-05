@@ -42,7 +42,7 @@ export default function TeamPage() {
   useEffect(() => {
     async function fetchTeam() {
       try {
-        const res = await fetch("/api/team");
+        const res = await fetch("/api/team", { cache: "no-store" });
         const data = await res.json();
         if (Array.isArray(data)) {
           setTeam(data);

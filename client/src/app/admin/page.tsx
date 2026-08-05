@@ -36,9 +36,9 @@ export default function AdminDashboard() {
     async function fetchStats() {
       try {
         const [projectsRes, teamRes, leadsRes] = await Promise.all([
-          fetch("/api/projects").then(r => r.json()),
-          fetch("/api/team").then(r => r.json()),
-          fetch("/api/leads").then(r => r.json()),
+          fetch("/api/projects", { cache: "no-store" }).then(r => r.json()),
+          fetch("/api/team", { cache: "no-store" }).then(r => r.json()),
+          fetch("/api/leads", { cache: "no-store", headers: typeof getAuthHeader === "function" ? getAuthHeader() : undefined }).then(r => r.json()),
         ]);
         
         setStats({

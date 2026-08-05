@@ -11,7 +11,7 @@ export default function AdminSiteContent() {
   useEffect(() => {
     async function fetchContent() {
       try {
-        const res = await fetch("/api/site-content");
+        const res = await fetch("/api/site-content", { cache: "no-store" });
         if (res.ok) {
           const data = await res.json();
           setContent(data);

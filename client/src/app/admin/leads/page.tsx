@@ -22,6 +22,7 @@ export default function AdminLeads() {
   const fetchLeads = async () => {
     try {
       const res = await fetch("/api/leads", {
+        cache: "no-store",
         headers: getAuthHeader()
       });
       if (res.ok) {

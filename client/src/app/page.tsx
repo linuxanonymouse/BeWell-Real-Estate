@@ -66,9 +66,9 @@ export default function Home() {
     async function fetchData() {
       try {
         const [contentRes, projectsRes, teamRes] = await Promise.all([
-          fetch("/api/site-content"),
-          fetch("/api/projects"),
-          fetch("/api/team")
+          fetch("/api/site-content", { cache: "no-store" }),
+          fetch("/api/projects", { cache: "no-store" }),
+          fetch("/api/team", { cache: "no-store" })
         ]);
         
         if (contentRes.ok) {
