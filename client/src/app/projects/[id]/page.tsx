@@ -96,7 +96,7 @@ export default function ProjectDetailsPage() {
           className="w-full h-full"
         >
           <img 
-            src={project.image || `/project-${parseInt(id) % 2 === 0 ? 2 : 1}.png`} 
+            src={project.image || `${process.env.NEXT_PUBLIC_BASE_PATH || ''}/project-${parseInt(id) % 2 === 0 ? 2 : 1}.png`} 
             alt={project.name}
             className="w-full h-full object-cover"
           />

@@ -138,7 +138,7 @@ export default function ProjectsPage() {
                     className="w-full h-full"
                   >
                     <img 
-                      src={project.image || `/project-${(index % 2) + 1}.png`} 
+                      src={project.image || `${process.env.NEXT_PUBLIC_BASE_PATH || ''}/project-${(index % 2) + 1}.png`} 
                       alt={project.name}
                       className="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity duration-700"
                     />

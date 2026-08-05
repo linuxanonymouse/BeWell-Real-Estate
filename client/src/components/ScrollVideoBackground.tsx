@@ -82,7 +82,7 @@ export default function ScrollVideoBackground() {
       <div className={`w-full h-full transition-opacity duration-1000 ${isReady ? 'opacity-80' : 'opacity-0'}`}>
         <video
           ref={videoRef}
-          src="/b-well-intra.mp4"
+          src={`${process.env.NEXT_PUBLIC_BASE_PATH || ''}/b-well-intra.mp4`}
           className="w-full h-full object-cover"
           muted
           playsInline

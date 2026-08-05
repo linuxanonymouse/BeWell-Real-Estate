@@ -284,7 +284,7 @@ export default function Home() {
                   initial={{ opacity: 0, y: 60 }} whileInView={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.1, duration: 1 }} viewport={{ once: true, margin: "-50px" }}
                   className="w-full group cursor-pointer relative aspect-[3/4] overflow-hidden border border-white/5 shadow-lg hover:shadow-[0_0_30px_rgba(192,155,98,0.2)] transition-shadow duration-500 rounded-lg"
                 >
-                  <img src={project.image || `/project-${i % 2 === 0 ? 1 : 2}.png`} alt={project.name} className="w-full h-full object-cover opacity-80 group-hover:opacity-100 group-hover:scale-110 transition-all duration-1000 ease-out" />
+                  <img src={project.image || `${process.env.NEXT_PUBLIC_BASE_PATH || ''}/project-${i % 2 === 0 ? 1 : 2}.png`} alt={project.name} className="w-full h-full object-cover opacity-80 group-hover:opacity-100 group-hover:scale-110 transition-all duration-1000 ease-out" />
                   <div className="absolute inset-0 bg-gradient-to-t from-[#0d0a08] via-[#0d0a08]/40 to-transparent pointer-events-none" />
                   
                   <div className="absolute bottom-4 sm:bottom-6 left-4 sm:left-6 right-4 sm:right-6">
@@ -311,7 +311,7 @@ export default function Home() {
       {/* ----------------- FOOTER ----------------- */}
       <footer className="relative w-full pt-20 md:pt-32 pb-8 md:pb-12 bg-[#050505] border-t border-white/5 overflow-hidden">
         <div className="absolute inset-0 w-full h-full z-0 opacity-30 mix-blend-screen">
-          <img src="/hero-bg.png" alt="Footer Skyline" className="w-full h-full object-cover object-bottom" />
+          <img src={`${process.env.NEXT_PUBLIC_BASE_PATH || ''}/hero-bg.png`} alt="Footer Skyline" className="w-full h-full object-cover object-bottom" />
           <div className="absolute inset-0 bg-gradient-to-t from-[#050505] via-[#050505]/70 to-[#050505]" />
         </div>
 
