@@ -36,9 +36,9 @@ export default function AdminDashboard() {
     async function fetchStats() {
       try {
         const [projectsRes, teamRes, leadsRes] = await Promise.all([
-          fetch(process.env.NEXT_PUBLIC_API_URL + '/projects').then(r => r.json()),
-          fetch(process.env.NEXT_PUBLIC_API_URL + '/team').then(r => r.json()),
-          fetch(process.env.NEXT_PUBLIC_API_URL + '/leads').then(r => r.json()),
+          fetch("/api/projects").then(r => r.json()),
+          fetch("/api/team").then(r => r.json()),
+          fetch("/api/leads").then(r => r.json()),
         ]);
         
         setStats({

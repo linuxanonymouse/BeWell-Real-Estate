@@ -29,7 +29,7 @@ export default function AdminProjects() {
 
   const fetchProjects = async () => {
     try {
-      const res = await fetch(process.env.NEXT_PUBLIC_API_URL + "/projects");
+      const res = await fetch("/api/projects");
       const data = await res.json();
       setProjects(data);
     } catch (error) {
@@ -74,7 +74,7 @@ export default function AdminProjects() {
     formData.append("file", file);
 
     try {
-      const res = await fetch(process.env.NEXT_PUBLIC_API_URL + "/upload", {
+      const res = await fetch("/api/upload", {
         method: "POST",
         headers: getAuthHeader(),
         body: formData,
@@ -97,13 +97,13 @@ export default function AdminProjects() {
 
     try {
       if (editingProject) {
-        await fetch(`${process.env.NEXT_PUBLIC_API_URL}/projects/${editingProject.id}`, {
+        await fetch(`/api/projects/${editingProject.id}`, {
           method: "PUT",
           headers: { "Content-Type": "application/json", ...getAuthHeader() },
           body: JSON.stringify(payload),
         });
       } else {
-        await fetch(process.env.NEXT_PUBLIC_API_URL + "/projects", {
+        await fetch("/api/projects", {
           method: "POST",
           headers: { "Content-Type": "application/json", ...getAuthHeader() },
           body: JSON.stringify(payload),
@@ -119,7 +119,7 @@ export default function AdminProjects() {
   const handleDelete = async (id: string) => {
     if (!confirm("Are you sure you want to delete this project?")) return;
     try {
-      await fetch(`${process.env.NEXT_PUBLIC_API_URL}/projects/${id}`, { 
+      await fetch(`/api/projects/${id}`, { 
         method: "DELETE",
         headers: getAuthHeader()
       });

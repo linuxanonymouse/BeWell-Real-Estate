@@ -35,7 +35,7 @@ export default function ProjectDetailsPage() {
   useEffect(() => {
     async function fetchProject() {
       try {
-        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/projects/${id}`);
+        const res = await fetch(`/api/projects/${id}`);
         if (res.ok) {
           const data = await res.json();
           setProject(data);

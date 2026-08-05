@@ -11,7 +11,7 @@ export default function AdminSiteContent() {
   useEffect(() => {
     async function fetchContent() {
       try {
-        const res = await fetch(process.env.NEXT_PUBLIC_API_URL + "/site-content");
+        const res = await fetch("/api/site-content");
         if (res.ok) {
           const data = await res.json();
           setContent(data);
@@ -27,7 +27,7 @@ export default function AdminSiteContent() {
     e.preventDefault();
     setStatus('saving');
     try {
-      await fetch(process.env.NEXT_PUBLIC_API_URL + "/site-content", {
+      await fetch("/api/site-content", {
         method: "PUT",
         headers: { "Content-Type": "application/json", ...getAuthHeader() },
         body: JSON.stringify(content),

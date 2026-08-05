@@ -13,7 +13,7 @@ export default function AdminTelegramSettings() {
   useEffect(() => {
     async function fetchSettings() {
       try {
-        const res = await fetch(process.env.NEXT_PUBLIC_API_URL + "/telegram/settings", {
+        const res = await fetch("/api/telegram/settings", {
           headers: getAuthHeader()
         });
         if (res.ok) {
@@ -32,7 +32,7 @@ export default function AdminTelegramSettings() {
     e.preventDefault();
     setStatus('saving');
     try {
-      await fetch(process.env.NEXT_PUBLIC_API_URL + "/telegram/settings", {
+      await fetch("/api/telegram/settings", {
         method: "PUT",
         headers: { "Content-Type": "application/json", ...getAuthHeader() },
         body: JSON.stringify({ token, chatId }),
@@ -48,7 +48,7 @@ export default function AdminTelegramSettings() {
   const handleTest = async () => {
     setTestStatus('testing');
     try {
-      const res = await fetch(process.env.NEXT_PUBLIC_API_URL + "/telegram/test", { 
+      const res = await fetch("/api/telegram/test", { 
         method: "POST",
         headers: getAuthHeader()
       });

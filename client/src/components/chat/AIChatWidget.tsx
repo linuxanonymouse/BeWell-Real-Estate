@@ -43,7 +43,7 @@ export default function AIChatWidget() {
     setIsLoading(true);
 
     try {
-      const response = await fetch(process.env.NEXT_PUBLIC_API_URL + '/ai/chat', {
+      const response = await fetch("/api/ai/chat", {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ message: userMessage.content }),

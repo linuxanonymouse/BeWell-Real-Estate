@@ -25,7 +25,7 @@ export default function AdminTeam() {
 
   const fetchTeam = async () => {
     try {
-      const res = await fetch(process.env.NEXT_PUBLIC_API_URL + "/team", {
+      const res = await fetch("/api/team", {
         headers: getAuthHeader()
       });
       if (res.ok) {
@@ -72,7 +72,7 @@ export default function AdminTeam() {
     formData.append("file", file);
 
     try {
-      const res = await fetch(process.env.NEXT_PUBLIC_API_URL + "/upload", {
+      const res = await fetch("/api/upload", {
         method: "POST",
         headers: getAuthHeader(),
         body: formData,
@@ -95,13 +95,13 @@ export default function AdminTeam() {
 
     try {
       if (editingMember) {
-        await fetch(`${process.env.NEXT_PUBLIC_API_URL}/team/${editingMember.id}`, {
+        await fetch(`/api/team/${editingMember.id}`, {
           method: "PUT",
           headers: { "Content-Type": "application/json", ...getAuthHeader() },
           body: JSON.stringify(payload),
         });
       } else {
-        await fetch(process.env.NEXT_PUBLIC_API_URL + "/team", {
+        await fetch("/api/team", {
           method: "POST",
           headers: { "Content-Type": "application/json", ...getAuthHeader() },
           body: JSON.stringify(payload),
@@ -117,7 +117,7 @@ export default function AdminTeam() {
   const handleDelete = async (id: string) => {
     if (!confirm("Are you sure you want to remove this team member?")) return;
     try {
-      await fetch(`${process.env.NEXT_PUBLIC_API_URL}/team/${id}`, { 
+      await fetch(`/api/team/${id}`, { 
         method: "DELETE",
         headers: getAuthHeader()
       });

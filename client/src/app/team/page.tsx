@@ -42,7 +42,7 @@ export default function TeamPage() {
   useEffect(() => {
     async function fetchTeam() {
       try {
-        const res = await fetch(process.env.NEXT_PUBLIC_API_URL + "/team");
+        const res = await fetch("/api/team");
         const data = await res.json();
         if (Array.isArray(data)) {
           setTeam(data);
