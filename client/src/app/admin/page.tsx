@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { Building2, Users, MessageSquare, TrendingUp } from "lucide-react";
+import { getAuthHeader } from "./layout";
 import { 
   PieChart, Pie, Cell, Tooltip, ResponsiveContainer, 
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Legend 
