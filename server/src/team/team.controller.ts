@@ -1,6 +1,7 @@
-import { Controller, Get, Post, Put, Delete, Param, Body } from '@nestjs/common';
+import { Controller, Get, Post, Put, Delete, Param, Body, UseGuards } from '@nestjs/common';
 import { TeamService } from './team.service';
 import type { TeamMember } from './team.service';
+import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 
 @Controller('team')
 export class TeamController {
@@ -16,16 +17,19 @@ export class TeamController {
     return this.teamService.findOne(id);
   }
 
+  @UseGuards(JwtAuthGuard)
   @Post()
   create(@Body() member: Omit<TeamMember, 'id'>): TeamMember {
     return this.teamService.create(member);
   }
 
+  @UseGuards(JwtAuthGuard)
   @Put(':id')
   update(@Param('id') id: string, @Body() data: Partial<TeamMember>): TeamMember | undefined {
     return this.teamService.update(id, data);
   }
 
+  @UseGuards(JwtAuthGuard)
   @Delete(':id')
   delete(@Param('id') id: string): { deleted: boolean } {
     return { deleted: this.teamService.delete(id) };

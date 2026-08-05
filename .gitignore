@@ -1,0 +1,19 @@
+# Node.js
+node_modules/
+dist/
+.env
+
+# Next.js
+.next/
+out/
+build/
+
+# Client large files
+client/ffmpeg.zip
+client/ffmpeg_ext/
+client/public/*.mp4
+
+# Server large files
+server/models/
+server/data/
+server/uploads/

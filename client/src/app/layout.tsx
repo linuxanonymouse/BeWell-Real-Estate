@@ -2,7 +2,9 @@ import type { Metadata } from "next";
 import { Montserrat, Cormorant_Garamond, Inter } from "next/font/google";
 import SmoothScroll from "@/components/layout/SmoothScroll";
 import LoadingScreen from "@/components/layout/LoadingScreen";
+import AIChatWidget from "@/components/chat/AIChatWidget";
 import "./globals.css";
+
 
 const montserrat = Montserrat({
   variable: "--font-sans",
@@ -40,6 +42,7 @@ export default function RootLayout({
         <SmoothScroll>
           {children}
         </SmoothScroll>
+        <AIChatWidget />
       </body>
     </html>
   );
