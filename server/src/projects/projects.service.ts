@@ -37,6 +37,11 @@ export class ProjectsService implements OnModuleInit {
         this.logger.error('Failed to seed projects from disk', err);
       }
     }
+    // Migrate: strip hardcoded localhost URLs from image fields
+    await this.projectModel.updateMany(
+      { image: { $regex: '^http://localhost' } },
+      [{ $set: { image: { $replaceAll: { input: '$image', find: 'http://localhost:3001', replacement: '' } } } }],
+    );
   }
 
   async findAll(): Promise<ProjectDto[]> {

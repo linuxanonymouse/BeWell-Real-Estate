@@ -36,6 +36,11 @@ export class TeamService implements OnModuleInit {
         this.logger.error('Failed to seed team from disk', err);
       }
     }
+    // Migrate: strip hardcoded localhost URLs from image fields
+    await this.teamModel.updateMany(
+      { image: { $regex: '^http://localhost' } },
+      [{ $set: { image: { $replaceAll: { input: '$image', find: 'http://localhost:3001', replacement: '' } } } }],
+    );
   }
 
   async findAll(): Promise<TeamMemberDto[]> {
