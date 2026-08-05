@@ -5,7 +5,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Building2, LayoutDashboard, Users, MessageSquare, Send, LogOut } from "lucide-react";
 
-export function getAuthHeader() {
+export function getAuthHeader(): Record<string, string> {
   if (typeof window !== "undefined") {
     const token = localStorage.getItem("admin_token");
     if (token) {
