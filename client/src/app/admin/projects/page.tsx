@@ -1,7 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Plus, Edit2, Trash2, X } from "lucide-react";
+import { Plus, Edit2, Trash2, X, BarChart3 } from "lucide-react";
+import Link from "next/link";
 
 import { getAuthHeader } from "../layout";
 
@@ -172,6 +173,9 @@ export default function AdminProjects() {
                 </td>
                 <td className="p-6 text-[#c09b62]">{project.value}</td>
                 <td className="p-6 flex justify-end gap-3">
+                  <Link href={`/admin/projects/${project.id}`} className="text-zinc-500 hover:text-[#c09b62] transition-colors" title="Resources & Inflation">
+                    <BarChart3 className="w-4 h-4" />
+                  </Link>
                   <button onClick={() => openModal(project)} className="text-zinc-500 hover:text-white transition-colors">
                     <Edit2 className="w-4 h-4" />
                   </button>
