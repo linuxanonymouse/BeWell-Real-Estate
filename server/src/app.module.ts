@@ -13,6 +13,7 @@ import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
 
 import { MongooseModule } from '@nestjs/mongoose';
+import { TicketsModule } from './tickets/tickets.module';
 
 @Module({
   imports: [
@@ -28,7 +29,8 @@ import { MongooseModule } from '@nestjs/mongoose';
     LeadsModule, 
     AuthModule,
     UploadModule,
-    SiteContentModule
+    SiteContentModule,
+    TicketsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

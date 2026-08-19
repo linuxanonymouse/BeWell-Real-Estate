@@ -443,6 +443,52 @@ export default function ProjectResourcesPage() {
         </div>
       )}
 
+      {/* Progress Updates Section */}
+      <div className="bg-[#050505] border border-zinc-900 rounded-2xl overflow-hidden mt-8">
+        <div className="p-6 border-b border-zinc-900 flex justify-between items-center">
+          <h2 className="text-[#c09b62] text-sm uppercase tracking-widest font-sans">Progress Updates</h2>
+          <button
+            onClick={() => {
+              const text = prompt("Enter progress update text:");
+              if (text) {
+                // Simplified for now, just text
+                fetch(`/api/projects/${project.id}/progress`, {
+                  method: "POST",
+                  headers: { "Content-Type": "application/json", ...getAuthHeader() },
+                  body: JSON.stringify({ text, images: [] }),
+                }).then(() => fetchProject());
+              }
+            }}
+            className="bg-[#c09b62] hover:bg-[#dfc499] text-black px-5 py-2 rounded-lg flex items-center gap-2 font-sans text-xs tracking-wider uppercase transition-colors"
+          >
+            <Plus className="w-4 h-4" /> Add Update
+          </button>
+        </div>
+        <div className="p-6">
+          {!project.progressUpdates || project.progressUpdates.length === 0 ? (
+            <div className="text-center py-8 text-zinc-600 text-sm">No progress updates yet.</div>
+          ) : (
+            <div className="flex flex-col gap-6">
+              {project.progressUpdates.map((update: any, idx: number) => (
+                <div key={idx} className="border-l-2 border-[#c09b62]/30 pl-4 py-1">
+                  <div className="text-[10px] text-zinc-500 uppercase tracking-widest mb-2">
+                    {new Date(update.date).toLocaleString()}
+                  </div>
+                  <p className="text-white text-sm">{update.text}</p>
+                  {update.images && update.images.length > 0 && (
+                    <div className="flex gap-2 mt-4">
+                      {update.images.map((img: string, i: number) => (
+                        <img key={i} src={img} className="w-24 h-24 object-cover rounded-lg border border-zinc-800" alt="Progress" />
+                      ))}
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
+
       {/* Update Price Modal */}
       {updatingMaterial && (
         <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4">

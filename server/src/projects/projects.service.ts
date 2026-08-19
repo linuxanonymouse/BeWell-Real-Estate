@@ -23,6 +23,10 @@ export interface ProjectDto {
   value: string;
   image?: string;
   materials?: MaterialDto[];
+  progressUpdates?: { text: string; images: string[]; date: string }[];
+  ownerId?: string;
+  approvalStatus?: string;
+  isPublic?: boolean;
 }
 
 @Injectable()
@@ -50,8 +54,18 @@ export class ProjectsService implements OnModuleInit {
     }
   }
 
-  async findAll(): Promise<ProjectDto[]> {
-    const projects = await this.projectModel.find().exec();
+  async findAll(user?: any): Promise<ProjectDto[]> {
+    let query: any = { isPublic: true }; // Default for unauthenticated
+
+    if (user) {
+      if (user.role === 'superadmin' || user.role === 'support') {
+        query = {}; // Admins see everything
+      } else if (user.role === 'client') {
+        query = { $or: [{ isPublic: true }, { ownerId: user.userId }] };
+      }
+    }
+
+    const projects = await this.projectModel.find(query).exec();
     return projects.map(p => this.mapToDto(p));
   }
 
@@ -60,8 +74,14 @@ export class ProjectsService implements OnModuleInit {
     return p ? this.mapToDto(p) : undefined;
   }
 
-  async create(project: Omit<ProjectDto, 'id'>): Promise<ProjectDto> {
-    const newProject = new this.projectModel(project);
+  async create(project: Omit<ProjectDto, 'id'>, user?: any): Promise<ProjectDto> {
+    const payload = { ...project };
+    if (user && user.role === 'client') {
+      payload.ownerId = user.userId;
+      payload.approvalStatus = 'pending';
+      payload.isPublic = false;
+    }
+    const newProject = new this.projectModel(payload);
     const p = await newProject.save();
     return this.mapToDto(p);
   }
@@ -121,6 +141,20 @@ export class ProjectsService implements OnModuleInit {
     return this.mapToDto(project);
   }
 
+  async addProgressUpdate(projectId: string, update: { text: string; images: string[] }): Promise<ProjectDto | undefined> {
+    const project = await this.projectModel.findById(projectId).exec();
+    if (!project) return undefined;
+
+    project.progressUpdates.push({
+      text: update.text,
+      images: update.images,
+      date: new Date(),
+    } as any);
+
+    await project.save();
+    return this.mapToDto(project);
+  }
+
   private mapToDto(doc: any): ProjectDto {
     return {
       id: doc._id.toString(),
@@ -141,6 +175,14 @@ export class ProjectsService implements OnModuleInit {
           price: ph.price,
         })),
       })),
+      progressUpdates: (doc.progressUpdates || []).map((pu: any) => ({
+        text: pu.text,
+        images: pu.images || [],
+        date: pu.date instanceof Date ? pu.date.toISOString() : pu.date,
+      })),
+      ownerId: doc.ownerId,
+      approvalStatus: doc.approvalStatus,
+      isPublic: doc.isPublic,
     };
   }
 }

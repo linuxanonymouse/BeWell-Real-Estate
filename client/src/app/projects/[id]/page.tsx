@@ -15,6 +15,7 @@ interface Project {
   status: string;
   value: string;
   image?: string;
+  progressUpdates?: { text: string; images: string[]; date: string }[];
 }
 
 const fallbackProjects: Project[] = [
@@ -181,8 +182,36 @@ export default function ProjectDetailsPage() {
               </button>
             </div>
           </motion.div>
-          
         </div>
+
+        {/* Progress Updates */}
+        {project.progressUpdates && project.progressUpdates.length > 0 && (
+          <div className="mt-20 pt-16 border-t border-white/10">
+            <h2 className="text-2xl font-serif uppercase tracking-wider mb-10 text-[#c09b62]">Progress Updates</h2>
+            <div className="flex flex-col gap-10">
+              {project.progressUpdates.map((update, idx) => (
+                <div key={idx} className="border-l-2 border-[#c09b62] pl-6 py-2">
+                  <div className="text-sm text-gray-500 font-sans tracking-widest uppercase mb-4">
+                    {new Date(update.date).toLocaleDateString("en-US", { year: 'numeric', month: 'long', day: 'numeric' })}
+                  </div>
+                  <p className="text-gray-300 font-sans leading-relaxed max-w-3xl mb-6">
+                    {update.text}
+                  </p>
+                  {update.images && update.images.length > 0 && (
+                    <div className="flex flex-wrap gap-4">
+                      {update.images.map((img, i) => (
+                        <div key={i} className="w-48 h-48 rounded-lg overflow-hidden border border-white/10">
+                          <img src={img} alt="Progress update" className="w-full h-full object-cover hover:scale-110 transition-transform duration-500 cursor-pointer" />
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
       </div>
     </main>
   );

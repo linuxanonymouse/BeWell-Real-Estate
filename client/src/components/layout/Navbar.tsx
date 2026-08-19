@@ -24,10 +24,13 @@ export default function Navbar({ onScheduleClick }: NavbarProps) {
   const [scrolled, setScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [activeSection, setActiveSection] = useState("01");
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const pathname = usePathname();
   const router = useRouter();
 
   useEffect(() => {
+    setIsLoggedIn(!!localStorage.getItem("token"));
+    
     const handleScroll = () => {
       setScrolled(window.scrollY > 60);
     };
@@ -115,9 +118,7 @@ export default function Navbar({ onScheduleClick }: NavbarProps) {
               key={link.href}
               href={link.href}
               className={`relative py-1 transition-colors duration-300 ${
-                pathname === link.href
-                  ? 'text-[#c09b62]'
-                  : 'text-white/80 hover:text-[#c09b62]'
+                pathname === link.href ? 'text-[#c09b62]' : 'text-white/80 hover:text-[#c09b62]'
               }`}
             >
               {link.label}
@@ -126,6 +127,15 @@ export default function Navbar({ onScheduleClick }: NavbarProps) {
               )}
             </Link>
           ))}
+          {isLoggedIn ? (
+            <Link href="/client-dashboard" className="relative py-1 transition-colors duration-300 text-white/80 hover:text-[#c09b62]">
+              Dashboard
+            </Link>
+          ) : (
+            <Link href="/auth/register" className="relative py-1 transition-colors duration-300 text-white/80 hover:text-[#c09b62]">
+              Sign Up
+            </Link>
+          )}
         </nav>
 
         <div className="flex items-center gap-3 drop-shadow-md">
@@ -182,6 +192,23 @@ export default function Navbar({ onScheduleClick }: NavbarProps) {
                   {link.label}
                 </Link>
               ))}
+              {isLoggedIn ? (
+                <Link
+                  href="/client-dashboard"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="text-sm tracking-[0.3em] uppercase font-sans transition-colors text-white/60 hover:text-white"
+                >
+                  Dashboard
+                </Link>
+              ) : (
+                <Link
+                  href="/auth/register"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="text-sm tracking-[0.3em] uppercase font-sans transition-colors text-white/60 hover:text-white"
+                >
+                  Sign Up
+                </Link>
+              )}
               <button onClick={() => { setMobileMenuOpen(false); onScheduleClick(); }} className="mt-4 px-6 py-3 border border-[#c09b62] text-[#c09b62] text-[9px] tracking-[0.25em] uppercase hover:bg-[#c09b62] hover:text-black transition-all duration-500 font-sans">
                 Schedule a Consultation
               </button>

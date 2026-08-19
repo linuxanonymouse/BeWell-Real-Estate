@@ -40,6 +40,20 @@ export class Material {
 export const MaterialSchema = SchemaFactory.createForClass(Material);
 
 @Schema()
+export class ProgressUpdate {
+  @Prop({ required: true })
+  text: string;
+
+  @Prop({ type: [String], default: [] })
+  images: string[];
+
+  @Prop({ required: true, default: Date.now })
+  date: Date;
+}
+
+export const ProgressUpdateSchema = SchemaFactory.createForClass(ProgressUpdate);
+
+@Schema()
 export class Project {
   @Prop({ required: true })
   name: string;
@@ -58,6 +72,18 @@ export class Project {
 
   @Prop({ type: [MaterialSchema], default: [] })
   materials: Material[];
+
+  @Prop({ type: [ProgressUpdateSchema], default: [] })
+  progressUpdates: ProgressUpdate[];
+
+  @Prop()
+  ownerId: string; // The client who requested it
+
+  @Prop({ default: 'approved' })
+  approvalStatus: string; // 'pending' | 'approved' | 'rejected'
+
+  @Prop({ default: true })
+  isPublic: boolean;
 }
 
 export const ProjectSchema = SchemaFactory.createForClass(Project);

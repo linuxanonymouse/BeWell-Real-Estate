@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Put, Delete, Param, Body, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Put, Delete, Param, Body, UseGuards, Request } from '@nestjs/common';
 import { ProjectsService } from './projects.service';
 import type { ProjectDto } from './projects.service';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
@@ -8,8 +8,14 @@ export class ProjectsController {
   constructor(private readonly projectsService: ProjectsService) {}
 
   @Get()
-  async findAll(): Promise<ProjectDto[]> {
-    return this.projectsService.findAll();
+  async findAllPublic(): Promise<ProjectDto[]> {
+    return this.projectsService.findAll(); // Defaults to unauthenticated
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Get('dashboard')
+  async findAllForDashboard(@Request() req: any): Promise<ProjectDto[]> {
+    return this.projectsService.findAll(req.user);
   }
 
   @Get(':id')
@@ -19,8 +25,8 @@ export class ProjectsController {
 
   @UseGuards(JwtAuthGuard)
   @Post()
-  async create(@Body() project: Omit<ProjectDto, 'id'>): Promise<ProjectDto> {
-    return this.projectsService.create(project);
+  async create(@Request() req: any, @Body() project: Omit<ProjectDto, 'id'>): Promise<ProjectDto> {
+    return this.projectsService.create(project, req.user);
   }
 
   @UseGuards(JwtAuthGuard)
@@ -63,5 +69,14 @@ export class ProjectsController {
     @Param('materialId') materialId: string,
   ): Promise<ProjectDto | undefined> {
     return this.projectsService.deleteMaterial(id, materialId);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Post(':id/progress')
+  async addProgressUpdate(
+    @Param('id') id: string,
+    @Body() body: { text: string; images: string[] },
+  ): Promise<ProjectDto | undefined> {
+    return this.projectsService.addProgressUpdate(id, body);
   }
 }

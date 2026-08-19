@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Plus, Edit2, Trash2, X, BarChart3 } from "lucide-react";
+import { Plus, Edit2, Trash2, X, BarChart3, Eye, EyeOff, CheckCircle } from "lucide-react";
 import Link from "next/link";
 
 import { getAuthHeader } from "../layout";
@@ -130,6 +130,32 @@ export default function AdminProjects() {
     }
   };
 
+  const handleApprove = async (project: any) => {
+    try {
+      await fetch(`/api/projects/${project.id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json", ...getAuthHeader() },
+        body: JSON.stringify({ approvalStatus: "approved" }),
+      });
+      fetchProjects();
+    } catch (error) {
+      console.error("Failed to approve project", error);
+    }
+  };
+
+  const handleTogglePublic = async (project: any) => {
+    try {
+      await fetch(`/api/projects/${project.id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json", ...getAuthHeader() },
+        body: JSON.stringify({ isPublic: !project.isPublic }),
+      });
+      fetchProjects();
+    } catch (error) {
+      console.error("Failed to toggle project visibility", error);
+    }
+  };
+
   return (
     <div className="flex flex-col gap-8">
       <div className="flex justify-between items-center">
@@ -152,8 +178,9 @@ export default function AdminProjects() {
             <tr>
               <th className="p-6 font-medium">Name</th>
               <th className="p-6 font-medium">Location</th>
-              <th className="p-6 font-medium">Status</th>
-              <th className="p-6 font-medium">Value</th>
+              <th className="p-6 font-medium">Construction Status</th>
+              <th className="p-6 font-medium">Approval</th>
+              <th className="p-6 font-medium">Visibility</th>
               <th className="p-6 font-medium text-right">Actions</th>
             </tr>
           </thead>
@@ -171,7 +198,23 @@ export default function AdminProjects() {
                     {project.status}
                   </span>
                 </td>
-                <td className="p-6 text-[#c09b62]">{project.value}</td>
+                <td className="p-6">
+                  {project.approvalStatus === 'pending' ? (
+                    <button onClick={() => handleApprove(project)} className="text-yellow-400 hover:text-green-400 flex items-center gap-1 bg-yellow-500/10 hover:bg-green-500/10 px-3 py-1 rounded-full text-xs transition-colors border border-yellow-500/20">
+                      Pending (Approve)
+                    </button>
+                  ) : (
+                    <span className="text-green-400 flex items-center gap-1 bg-green-500/10 px-3 py-1 rounded-full text-xs border border-green-500/20 w-fit">
+                      Approved
+                    </span>
+                  )}
+                </td>
+                <td className="p-6">
+                  <button onClick={() => handleTogglePublic(project)} className="flex items-center gap-2 text-zinc-400 hover:text-white transition-colors">
+                    {project.isPublic ? <Eye className="w-4 h-4 text-green-400" /> : <EyeOff className="w-4 h-4 text-red-400" />}
+                    {project.isPublic ? 'Public' : 'Private'}
+                  </button>
+                </td>
                 <td className="p-6 flex justify-end gap-3">
                   <Link href={`/admin/projects/${project.id}`} className="text-zinc-500 hover:text-[#c09b62] transition-colors" title="Resources & Inflation">
                     <BarChart3 className="w-4 h-4" />
