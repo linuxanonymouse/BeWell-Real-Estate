@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { usePathname, useRouter } from "next/navigation";
+import Link from "next/link";
 
 const sectionNames: Record<string, string> = {
   "01": "Home",
@@ -10,6 +11,10 @@ const sectionNames: Record<string, string> = {
   "05": "Trusted By",
   "06": "Projects",
 };
+
+const standaloneLinks: { href: string; label: string }[] = [
+  { href: "/client-portal", label: "Client Portal" },
+];
 
 interface NavbarProps {
   onScheduleClick: () => void;
@@ -105,6 +110,22 @@ export default function Navbar({ onScheduleClick }: NavbarProps) {
               )}
             </a>
           ))}
+          {standaloneLinks.map((link) => (
+            <Link
+              key={link.href}
+              href={link.href}
+              className={`relative py-1 transition-colors duration-300 ${
+                pathname === link.href
+                  ? 'text-[#c09b62]'
+                  : 'text-white/80 hover:text-[#c09b62]'
+              }`}
+            >
+              {link.label}
+              {pathname === link.href && (
+                <motion.div layoutId="navUnderline" className="absolute -bottom-1 left-0 right-0 h-[1px] bg-[#c09b62]" transition={{ type: "spring", stiffness: 300, damping: 30 }} />
+              )}
+            </Link>
+          ))}
         </nav>
 
         <div className="flex items-center gap-3 drop-shadow-md">
@@ -148,6 +169,18 @@ export default function Navbar({ onScheduleClick }: NavbarProps) {
                 >
                   {name}
                 </a>
+              ))}
+              {standaloneLinks.map((link) => (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  onClick={() => setMobileMenuOpen(false)}
+                  className={`text-sm tracking-[0.3em] uppercase font-sans transition-colors ${
+                    pathname === link.href ? 'text-[#c09b62]' : 'text-white/60 hover:text-white'
+                  }`}
+                >
+                  {link.label}
+                </Link>
               ))}
               <button onClick={() => { setMobileMenuOpen(false); onScheduleClick(); }} className="mt-4 px-6 py-3 border border-[#c09b62] text-[#c09b62] text-[9px] tracking-[0.25em] uppercase hover:bg-[#c09b62] hover:text-black transition-all duration-500 font-sans">
                 Schedule a Consultation
