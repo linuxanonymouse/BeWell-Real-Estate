@@ -16,7 +16,8 @@ export default function AdminDashboard() {
   const [stats, setStats] = useState({
     projects: 0,
     team: 0,
-    leads: 0
+    leads: 0,
+    conversionRate: 0
   });
 
   const [projectStats, setProjectStats] = useState([
@@ -49,10 +50,15 @@ export default function AdminDashboard() {
           fetchJson("/api/leads", { cache: "no-store", headers }),
         ]);
         
+        const convertedLeads = Array.isArray(leadsRes) ? leadsRes.filter((l: any) => l.status === 'Converted').length : 0;
+        const totalLeads = Array.isArray(leadsRes) ? leadsRes.length : 0;
+        const conversionRate = totalLeads > 0 ? Math.round((convertedLeads / totalLeads) * 100) : 0;
+        
         setStats({
           projects: projectsRes.length || 0,
           team: teamRes.length || 0,
           leads: leadsRes.length || 0,
+          conversionRate
         });
 
         // Compute project statuses
@@ -121,7 +127,7 @@ export default function AdminDashboard() {
     { title: "Total Properties", value: stats.projects, icon: Building2 },
     { title: "Active Inquiries", value: stats.leads, icon: MessageSquare },
     { title: "Team Members", value: stats.team, icon: Users },
-    { title: "Conversion Rate", value: "18%", icon: TrendingUp },
+    { title: "Conversion Rate", value: `${stats.conversionRate}%`, icon: TrendingUp },
   ];
 
   return (
