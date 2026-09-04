@@ -338,10 +338,16 @@ export class TelegramService implements OnModuleInit {
 
   private async handleAccountLink(chatId: number, linkToken: string) {
     try {
+      this.logger.log(`Attempting to link Telegram account for chatId ${chatId} with token: '${linkToken}'`);
+      
       const user = await this.userModel.findOne({ telegramLinkToken: linkToken }).exec();
+      
       if (!user) {
+        this.logger.warn(`Link failed: No user found in database with token '${linkToken}'`);
         return this.bot.sendMessage(chatId, '❌ <b>Invalid token.</b>\n\nThe token you provided is not valid or has expired. Please check your dashboard for the correct token.', { parse_mode: 'HTML' });
       }
+      
+      this.logger.log(`User found for token '${linkToken}': ${user.email} (${user._id})`);
 
       const chatIdStr = chatId.toString();
       const existingUser = await this.userModel.findOne({ telegramChatIds: chatIdStr }).exec();
