@@ -2,8 +2,6 @@ services:
   mongodb:
     image: mongo:latest
     container_name: bewell_mongodb
-    ports:
-      - "27027:27017"
     volumes:
       - bewell_mongo_data:/data/db
 
@@ -11,11 +9,10 @@ services:
     build:
       context: ./server
     container_name: bewell_backend
-    ports:
-      - "7346:3001"
     environment:
       - MONGO_URI=mongodb://mongodb:27017/bewell
-      - JWT_SECRET=BewellSuperSecretKey2026
+      - JWT_SECRET=${JWT_SECRET:-BewellSuperSecretKey2026}
+      - TELEGRAM_BOT_TOKEN=${TELEGRAM_BOT_TOKEN:-}
       - OLLAMA_URL=http://ollama:11434
     volumes:
       - ./server/uploads:/app/uploads
@@ -27,8 +24,6 @@ services:
   ollama:
     image: ollama/ollama:latest
     container_name: bewell_ollama
-    ports:
-      - "11434:11434"
     volumes:
       - bewell_ollama_data:/root/.ollama
     # Entrypoint override to pull the model on startup, then start the server
