@@ -1,9 +1,10 @@
-import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
+import { Injectable, Logger, OnModuleInit, Inject, forwardRef } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Project, ProjectDocument } from './projects.schema';
 import * as fs from 'fs';
 import * as path from 'path';
+import { TelegramService } from '../telegram/telegram.service';
 
 export interface MaterialDto {
   id?: string;
@@ -34,7 +35,10 @@ export class ProjectsService implements OnModuleInit {
   private readonly logger = new Logger(ProjectsService.name);
   private readonly dataPath = path.join(__dirname, '..', '..', 'data', 'projects.json');
 
-  constructor(@InjectModel(Project.name) private projectModel: Model<ProjectDocument>) {}
+  constructor(
+    @InjectModel(Project.name) private projectModel: Model<ProjectDocument>,
+    @Inject(forwardRef(() => TelegramService)) private telegramService: TelegramService
+  ) {}
 
   async onModuleInit() {
     const count = await this.projectModel.countDocuments().exec();
@@ -79,6 +83,7 @@ export class ProjectsService implements OnModuleInit {
     if (user && user.role === 'client') {
       payload.ownerId = user.userId;
       payload.approvalStatus = 'pending';
+      payload.status = 'planning'; // Provide default status
       payload.isPublic = false;
     }
     const newProject = new this.projectModel(payload);
@@ -152,6 +157,10 @@ export class ProjectsService implements OnModuleInit {
     } as any);
 
     await project.save();
+    
+    // Notify assigned users via Telegram
+    this.telegramService.notifyProjectUpdate(projectId, project.name, update.text, update.images);
+    
     return this.mapToDto(project);
   }
 

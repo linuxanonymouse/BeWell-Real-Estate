@@ -44,9 +44,9 @@ export default function AdminTeam() {
   const openModal = (member?: TeamMember) => {
     if (member) {
       setEditingMember(member);
-      setName(member.name);
-      setRole(member.role);
-      setDepartment(member.department);
+      setName(member.name || "");
+      setRole(member.role || "");
+      setDepartment(member.department || "");
       setImage(member.image || "");
     } else {
       setEditingMember(null);

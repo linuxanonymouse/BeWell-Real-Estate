@@ -4,20 +4,22 @@ import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { usePathname, useRouter } from "next/navigation";
 import Link from "next/link";
+import { Bell } from "lucide-react";
+import { useNotifications } from "@/hooks/useNotifications";
 
 const sectionNames: Record<string, string> = {
   "01": "Home",
   "04": "Visionaries",
-  "05": "Trusted By",
   "06": "Projects",
 };
 
-const standaloneLinks: { href: string; label: string }[] = [
-  { href: "/client-portal", label: "Client Portal" },
+const standaloneLinks = [
+  { name: 'About', href: '/about', label: 'About' },
+  { name: 'Portfolio', href: '/projects', label: 'Portfolio' }
 ];
 
 interface NavbarProps {
-  onScheduleClick: () => void;
+  onScheduleClick?: () => void;
 }
 
 export default function Navbar({ onScheduleClick }: NavbarProps) {
@@ -25,11 +27,20 @@ export default function Navbar({ onScheduleClick }: NavbarProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [activeSection, setActiveSection] = useState("01");
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [userRole, setUserRole] = useState<string>("");
   const pathname = usePathname();
   const router = useRouter();
+  const { unreadCount } = useNotifications();
 
   useEffect(() => {
-    setIsLoggedIn(!!localStorage.getItem("token"));
+    const token = !!localStorage.getItem("token");
+    setIsLoggedIn(token);
+    if (token) {
+      try {
+        const u = JSON.parse(localStorage.getItem("user") || "{}");
+        setUserRole(u.role || "");
+      } catch { setUserRole(""); }
+    }
     
     const handleScroll = () => {
       setScrolled(window.scrollY > 60);
@@ -96,7 +107,7 @@ export default function Navbar({ onScheduleClick }: NavbarProps) {
         
         {/* Desktop Nav */}
         <nav className="hidden lg:flex items-center gap-8 xl:gap-10 text-[9px] tracking-[0.25em] uppercase font-sans drop-shadow-md text-white">
-          {Object.entries(sectionNames).map(([id, name]) => (
+          {!isLoggedIn && Object.entries(sectionNames).map(([id, name]) => (
             <a 
               key={id}
               href={`#${id}`}
@@ -113,7 +124,7 @@ export default function Navbar({ onScheduleClick }: NavbarProps) {
               )}
             </a>
           ))}
-          {standaloneLinks.map((link) => (
+          {!isLoggedIn && standaloneLinks.map((link) => (
             <Link
               key={link.href}
               href={link.href}
@@ -128,17 +139,49 @@ export default function Navbar({ onScheduleClick }: NavbarProps) {
             </Link>
           ))}
           {isLoggedIn ? (
-            <Link href="/client-dashboard" className="relative py-1 transition-colors duration-300 text-white/80 hover:text-[#c09b62]">
-              Dashboard
-            </Link>
+            <>
+              {userRole === 'superadmin' || userRole === 'support' ? (
+                <Link href="/admin" className="relative py-1 transition-colors duration-300 text-white/80 hover:text-[#c09b62]">
+                  Admin Panel
+                </Link>
+              ) : (
+                <>
+                  <Link href="/client-dashboard" className={`relative py-1 transition-colors duration-300 ${pathname?.startsWith('/client-dashboard') && !pathname?.includes('chat') && !pathname?.includes('settings') ? 'text-[#c09b62]' : 'text-white/80 hover:text-[#c09b62]'}`}>
+                    Dashboard
+                  </Link>
+                  <Link href="/client-dashboard/chat" className={`relative py-1 transition-colors duration-300 ${pathname?.includes('/chat') ? 'text-[#c09b62]' : 'text-white/80 hover:text-[#c09b62]'}`}>
+                    Messages
+                  </Link>
+                  <Link href="/client-dashboard/settings" className={`relative py-1 transition-colors duration-300 ${pathname?.includes('/settings') ? 'text-[#c09b62]' : 'text-white/80 hover:text-[#c09b62]'}`}>
+                    Settings
+                  </Link>
+                </>
+              )}
+              <button onClick={() => { localStorage.removeItem('token'); localStorage.removeItem('admin_token'); localStorage.removeItem('user'); setIsLoggedIn(false); setUserRole(''); router.push('/'); }} className="relative py-1 transition-colors duration-300 text-white/80 hover:text-red-400">
+                Sign Out
+              </button>
+            </>
           ) : (
-            <Link href="/auth/register" className="relative py-1 transition-colors duration-300 text-white/80 hover:text-[#c09b62]">
-              Sign Up
-            </Link>
+            <>
+              <Link href="/auth/login" className="relative py-1 transition-colors duration-300 text-white/80 hover:text-[#c09b62]">
+                Sign In
+              </Link>
+              <Link href="/auth/register" className="relative py-1 transition-colors duration-300 text-[#c09b62]">
+                Sign Up
+              </Link>
+            </>
           )}
         </nav>
 
         <div className="flex items-center gap-3 drop-shadow-md">
+          {isLoggedIn && (
+            <Link href={userRole === 'client' ? '/client-dashboard/chat' : '/admin/tickets'} className="relative p-2 text-white/80 hover:text-[#c09b62] transition-colors">
+              <Bell className="w-5 h-5" />
+              {unreadCount > 0 && (
+                <span className="absolute top-1 right-1 w-2 h-2 bg-[#c09b62] rounded-full ring-2 ring-black" />
+              )}
+            </Link>
+          )}
           <button onClick={onScheduleClick} className="hidden md:block px-5 py-2 border border-[#c09b62]/40 text-[#c09b62] text-[8px] tracking-[0.25em] uppercase hover:bg-[#c09b62] hover:text-black transition-all duration-500 font-sans">
             Schedule a Consultation
           </button>
@@ -168,7 +211,7 @@ export default function Navbar({ onScheduleClick }: NavbarProps) {
             className="fixed top-0 left-0 w-full h-auto pt-[80px] pb-10 bg-black/50 backdrop-blur-2xl z-[99] border-b border-white/10 lg:hidden shadow-[0_20px_50px_rgba(0,0,0,0.5)] rounded-b-[2rem]"
           >
             <nav className="flex flex-col items-center gap-6">
-              {Object.entries(sectionNames).map(([id, name]) => (
+              {!isLoggedIn && Object.entries(sectionNames).map(([id, name]) => (
                 <a 
                   key={id}
                   href={`#${id}`}
@@ -180,7 +223,7 @@ export default function Navbar({ onScheduleClick }: NavbarProps) {
                   {name}
                 </a>
               ))}
-              {standaloneLinks.map((link) => (
+              {!isLoggedIn && standaloneLinks.map((link) => (
                 <Link
                   key={link.href}
                   href={link.href}
@@ -193,23 +236,39 @@ export default function Navbar({ onScheduleClick }: NavbarProps) {
                 </Link>
               ))}
               {isLoggedIn ? (
-                <Link
-                  href="/client-dashboard"
-                  onClick={() => setMobileMenuOpen(false)}
-                  className="text-sm tracking-[0.3em] uppercase font-sans transition-colors text-white/60 hover:text-white"
-                >
-                  Dashboard
-                </Link>
+                <>
+                  {userRole === 'superadmin' || userRole === 'support' ? (
+                    <Link href="/admin" onClick={() => setMobileMenuOpen(false)} className="text-sm tracking-[0.3em] uppercase font-sans transition-colors text-white/60 hover:text-white">
+                      Admin Panel
+                    </Link>
+                  ) : (
+                    <>
+                      <Link href="/client-dashboard" onClick={() => setMobileMenuOpen(false)} className="text-sm tracking-[0.3em] uppercase font-sans transition-colors text-white/60 hover:text-white">
+                        Dashboard
+                      </Link>
+                      <Link href="/client-dashboard/chat" onClick={() => setMobileMenuOpen(false)} className="text-sm tracking-[0.3em] uppercase font-sans transition-colors text-white/60 hover:text-white">
+                        Messages
+                      </Link>
+                      <Link href="/client-dashboard/settings" onClick={() => setMobileMenuOpen(false)} className="text-sm tracking-[0.3em] uppercase font-sans transition-colors text-white/60 hover:text-white">
+                        Settings
+                      </Link>
+                    </>
+                  )}
+                  <button onClick={() => { setMobileMenuOpen(false); localStorage.removeItem('token'); localStorage.removeItem('admin_token'); localStorage.removeItem('user'); setIsLoggedIn(false); setUserRole(''); router.push('/'); }} className="text-sm tracking-[0.3em] uppercase font-sans transition-colors text-red-400 hover:text-red-300">
+                    Sign Out
+                  </button>
+                </>
               ) : (
-                <Link
-                  href="/auth/register"
-                  onClick={() => setMobileMenuOpen(false)}
-                  className="text-sm tracking-[0.3em] uppercase font-sans transition-colors text-white/60 hover:text-white"
-                >
-                  Sign Up
-                </Link>
+                <>
+                  <Link href="/auth/login" onClick={() => setMobileMenuOpen(false)} className="text-sm tracking-[0.3em] uppercase font-sans transition-colors text-white/60 hover:text-white">
+                    Sign In
+                  </Link>
+                  <Link href="/auth/register" onClick={() => setMobileMenuOpen(false)} className="text-sm tracking-[0.3em] uppercase font-sans transition-colors text-[#c09b62] hover:text-white">
+                    Sign Up
+                  </Link>
+                </>
               )}
-              <button onClick={() => { setMobileMenuOpen(false); onScheduleClick(); }} className="mt-4 px-6 py-3 border border-[#c09b62] text-[#c09b62] text-[9px] tracking-[0.25em] uppercase hover:bg-[#c09b62] hover:text-black transition-all duration-500 font-sans">
+              <button onClick={() => { setMobileMenuOpen(false); onScheduleClick?.(); }} className="mt-4 px-6 py-3 border border-[#c09b62] text-[#c09b62] text-[9px] tracking-[0.25em] uppercase hover:bg-[#c09b62] hover:text-black transition-all duration-500 font-sans">
                 Schedule a Consultation
               </button>
             </nav>

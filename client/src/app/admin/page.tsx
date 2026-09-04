@@ -10,15 +10,7 @@ import {
 
 const COLORS = ['#c09b62', '#222222', '#555555', '#888888'];
 
-const leadData = [
-  { name: 'Jan', new: 40, converted: 24 },
-  { name: 'Feb', new: 30, converted: 13 },
-  { name: 'Mar', new: 20, converted: 58 },
-  { name: 'Apr', new: 27, converted: 39 },
-  { name: 'May', new: 18, converted: 48 },
-  { name: 'Jun', new: 23, converted: 38 },
-  { name: 'Jul', new: 34, converted: 43 },
-];
+
 
 export default function AdminDashboard() {
   const [stats, setStats] = useState({
@@ -32,14 +24,29 @@ export default function AdminDashboard() {
     { name: 'Under Construction', value: 0 },
     { name: 'Planning', value: 0 },
   ]);
+  const [leadData, setLeadData] = useState<any[]>([]);
+  const [recentActivity, setRecentActivity] = useState<any[]>([]);
 
   useEffect(() => {
     async function fetchStats() {
       try {
+        const fetchJson = async (url: string, init?: RequestInit) => {
+          const r = await fetch(url, init);
+          if (!r.ok) return [];
+          const text = await r.text();
+          try {
+            return JSON.parse(text);
+          } catch (e) {
+            console.error(`Failed to parse JSON from ${url}:`, text);
+            return [];
+          }
+        };
+
+        const headers = typeof getAuthHeader === "function" ? getAuthHeader() : {};
         const [projectsRes, teamRes, leadsRes] = await Promise.all([
-          fetch("/api/projects", { cache: "no-store" }).then(r => r.json()),
-          fetch("/api/team", { cache: "no-store" }).then(r => r.json()),
-          fetch("/api/leads", { cache: "no-store", headers: typeof getAuthHeader === "function" ? getAuthHeader() : undefined }).then(r => r.json()),
+          fetchJson("/api/projects", { cache: "no-store" }),
+          fetchJson("/api/team", { cache: "no-store" }),
+          fetchJson("/api/leads", { cache: "no-store", headers }),
         ]);
         
         setStats({
@@ -55,6 +62,53 @@ export default function AdminDashboard() {
         }, {});
 
         setProjectStats(Object.entries(statusCount).map(([name, value]) => ({ name, value: value as number })));
+
+        // Process leads for chart
+        const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+        const currentMonth = new Date().getMonth();
+        const chartData: any[] = [];
+        for (let i = 5; i >= 0; i--) {
+          const d = new Date();
+          d.setMonth(currentMonth - i);
+          chartData.push({ monthIndex: d.getMonth(), year: d.getFullYear(), name: months[d.getMonth()], new: 0, converted: 0 });
+        }
+        
+        leadsRes.forEach((l: any) => {
+          if (!l.createdAt) return;
+          const d = new Date(l.createdAt);
+          const idx = chartData.findIndex(c => c.monthIndex === d.getMonth() && c.year === d.getFullYear());
+          if (idx !== -1) {
+            if (l.status === 'Converted') chartData[idx].converted++;
+            else chartData[idx].new++;
+          }
+        });
+        setLeadData(chartData);
+
+        // Process recent activity
+        const activities: any[] = [];
+        leadsRes.slice(0, 5).forEach((l: any) => {
+          activities.push({
+            id: `lead-${l.id}`,
+            text: `New inquiry received from ${l.name}`,
+            date: new Date(l.createdAt || Date.now()),
+            type: 'lead',
+            color: 'bg-[#c09b62]'
+          });
+        });
+        projectsRes.slice(0, 5).forEach((p: any) => {
+          if (p.progressUpdates && p.progressUpdates.length > 0) {
+            const lastUpdate = p.progressUpdates[p.progressUpdates.length - 1];
+            activities.push({
+              id: `proj-${p.id}`,
+              text: `Project ${p.name} updated`,
+              date: new Date(lastUpdate.date),
+              type: 'project',
+              color: 'bg-zinc-600'
+            });
+          }
+        });
+        activities.sort((a, b) => b.date.getTime() - a.date.getTime());
+        setRecentActivity(activities.slice(0, 5));
 
       } catch (error) {
         console.error("Failed to fetch dashboard stats", error);
@@ -94,7 +148,7 @@ export default function AdminDashboard() {
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Bar Chart */}
-        <div className="bg-zinc-900 border border-zinc-800 p-6 rounded-xl lg:col-span-2">
+        <div className="min-w-0 bg-zinc-900 border border-zinc-800 p-6 rounded-xl lg:col-span-2">
           <h3 className="text-white font-sans text-sm tracking-widest uppercase mb-6">Inquiry Volume</h3>
           <div className="h-[300px] w-full">
             <ResponsiveContainer width="100%" height="100%">
@@ -115,7 +169,7 @@ export default function AdminDashboard() {
         </div>
 
         {/* Pie Chart */}
-        <div className="bg-zinc-900 border border-zinc-800 p-6 rounded-xl">
+        <div className="min-w-0 bg-zinc-900 border border-zinc-800 p-6 rounded-xl">
           <h3 className="text-white font-sans text-sm tracking-widest uppercase mb-6">Project Status</h3>
           <div className="h-[300px] w-full flex items-center justify-center">
             {projectStats.length > 0 ? (
@@ -154,36 +208,20 @@ export default function AdminDashboard() {
         <h3 className="text-white font-sans text-sm tracking-widest uppercase mb-6">Recent Activity</h3>
         <div className="bg-zinc-900 border border-zinc-800 rounded-xl overflow-hidden">
           <div className="divide-y divide-zinc-800">
-            <div className="p-4 md:p-6 flex items-center justify-between hover:bg-zinc-800/50 transition-colors">
-              <div className="flex items-center gap-4">
-                <div className="w-2 h-2 rounded-full bg-[#c09b62]" />
-                <div>
-                  <p className="text-sm text-zinc-300">New inquiry received from <span className="text-white">John Smith</span></p>
-                  <p className="text-xs text-zinc-500 mt-1">2 hours ago</p>
+            {recentActivity.length > 0 ? recentActivity.map(act => (
+              <div key={act.id} className="p-4 md:p-6 flex items-center justify-between hover:bg-zinc-800/50 transition-colors">
+                <div className="flex items-center gap-4">
+                  <div className={`w-2 h-2 rounded-full ${act.color}`} />
+                  <div>
+                    <p className="text-sm text-zinc-300">{act.text}</p>
+                    <p className="text-xs text-zinc-500 mt-1">{new Date(act.date).toLocaleString()}</p>
+                  </div>
                 </div>
+                <button className="text-xs text-[#c09b62] hover:underline uppercase tracking-widest">View</button>
               </div>
-              <button className="text-xs text-[#c09b62] hover:underline uppercase tracking-widest">View</button>
-            </div>
-            <div className="p-4 md:p-6 flex items-center justify-between hover:bg-zinc-800/50 transition-colors">
-              <div className="flex items-center gap-4">
-                <div className="w-2 h-2 rounded-full bg-zinc-600" />
-                <div>
-                  <p className="text-sm text-zinc-300">Property <span className="text-white">Rosewood Heights</span> updated</p>
-                  <p className="text-xs text-zinc-500 mt-1">5 hours ago</p>
-                </div>
-              </div>
-              <button className="text-xs text-[#c09b62] hover:underline uppercase tracking-widest">View</button>
-            </div>
-            <div className="p-4 md:p-6 flex items-center justify-between hover:bg-zinc-800/50 transition-colors">
-              <div className="flex items-center gap-4">
-                <div className="w-2 h-2 rounded-full bg-zinc-600" />
-                <div>
-                  <p className="text-sm text-zinc-300">New team member <span className="text-white">David Allen</span> added</p>
-                  <p className="text-xs text-zinc-500 mt-1">1 day ago</p>
-                </div>
-              </div>
-              <button className="text-xs text-[#c09b62] hover:underline uppercase tracking-widest">View</button>
-            </div>
+            )) : (
+              <div className="p-6 text-zinc-500 text-sm">No recent activity</div>
+            )}
           </div>
         </div>
       </div>

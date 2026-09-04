@@ -25,6 +25,12 @@ export class User {
 
   @Prop({ type: [String], default: [] })
   telegramChatIds: string[];
+
+  @Prop()
+  telegramLinkToken: string;
+
+  @Prop({ default: false })
+  banned: boolean;
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);

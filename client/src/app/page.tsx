@@ -64,6 +64,22 @@ export default function Home() {
     setMounted(true);
     
     async function fetchData() {
+      const token = localStorage.getItem("token");
+      const userStr = localStorage.getItem("user");
+      
+      if (token && userStr) {
+        try {
+          const user = JSON.parse(userStr);
+          if (user.role === "client") {
+            window.location.href = "/client-dashboard";
+            return;
+          } else if (user.role === "superadmin" || user.role === "support") {
+            window.location.href = "/admin";
+            return;
+          }
+        } catch (e) {}
+      }
+
       try {
         const [contentRes, projectsRes, teamRes] = await Promise.all([
           fetch("/api/site-content", { cache: "no-store" }),
@@ -209,48 +225,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ----------------- SECTION 5: TRUSTED BY ----------------- */}
-      <section id="05" className="relative w-full py-20 md:py-32 px-6 md:px-12 lg:px-24 bg-transparent overflow-hidden">
-        <div className="flex flex-col xl:flex-row items-center gap-12 xl:gap-8">
-          
-          <motion.div variants={staggerContainer} initial="hidden" whileInView="visible" viewport={{ once: true }} className="w-full xl:w-1/3 flex-shrink-0">
-            <div className="bg-black/60 backdrop-blur-md p-8 md:p-12 rounded-2xl border border-white/10 shadow-2xl inline-block w-full">
-              <motion.h2 variants={fadeUp} className="text-[1.8rem] sm:text-[2rem] md:text-[2.5rem] leading-[1.1] font-serif font-light tracking-wide text-white uppercase flex flex-col">
-                <span>{siteContent?.certifications?.titleLine1 || "Trusted By"}</span>
-                <span>{siteContent?.certifications?.titleLine2 || "Those Who"}</span>
-                <span className="text-[#c09b62] italic">{siteContent?.certifications?.titleHighlight || "Know Excellence"}</span>
-              </motion.h2>
-              <motion.p variants={fadeUp} className="text-[#f5eedf] text-xs font-sans font-light leading-loose tracking-[0.1em] mt-6">
-                {siteContent?.certifications?.subtitle || "Partnered with the world's most prestigious brands."}
-              </motion.p>
-            </div>
-          </motion.div>
 
-          <div className="w-full xl:w-2/3 flex gap-4 overflow-x-auto pb-6 snap-x hide-scrollbar">
-          {[
-            { img: "/certificate.png", quote: siteContent?.certifications?.quote || "Exceptional execution.", author: siteContent?.certifications?.quoteAuthor || "CEO, MVP" },
-            { img: "/certificate.png", quote: "They redefine luxury living with every project.", author: "Director, Global Architecture" },
-            { img: "/certificate.png", quote: "Unparalleled attention to detail and design.", author: "President, Elite Estates" }
-          ].map((item, idx) => (
-            <motion.div key={idx} initial={{ opacity: 0, x: 50 }} whileInView={{ opacity: 1, x: 0 }} transition={{ delay: idx * 0.15, duration: 0.8 }} viewport={{ once: true }} className="min-w-[200px] max-w-[220px] flex-shrink-0 snap-start">
-              <div className="bg-black/70 backdrop-blur-md p-3 rounded-xl border border-white/10 h-full flex flex-col gap-3 shadow-lg">
-                <div className="w-full h-[140px] bg-[#0d0a08] border border-[#c09b62]/40 p-1 relative overflow-hidden rounded-lg">
-                  <img src={item.img} alt="Certificate" className="w-full h-full object-cover opacity-90" />
-                </div>
-                <div className="flex-1">
-                  <p className="text-[#f5eedf] text-[11px] font-serif italic font-light leading-relaxed tracking-wide">
-                    {item.quote}
-                  </p>
-                  <div className="mt-2 text-[8px] font-sans tracking-[0.2em] uppercase text-[#c09b62]">
-                    {item.author}
-                  </div>
-                </div>
-              </div>
-            </motion.div>
-          ))}
-          </div>
-        </div>
-      </section>
 
       {/* ----------------- SECTION 6: PROJECTS ----------------- */}
       <section id="06" className="relative w-full py-20 md:py-32 px-6 md:px-12 lg:px-24 bg-transparent">

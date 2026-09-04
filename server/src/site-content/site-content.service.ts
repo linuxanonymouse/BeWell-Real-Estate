@@ -11,6 +11,7 @@ export interface SiteContentDto {
   projectsSection?: any;
   certifications?: any;
   footer?: any;
+  about?: any;
 }
 
 @Injectable()
@@ -37,7 +38,11 @@ export class SiteContentService implements OnModuleInit {
               hero: { headline: "Welcome to BeWell", subheadline: "Building legacies" },
               projectsSection: { title: "Our Projects" },
               certifications: { title: "Certifications" },
-              footer: { text: "© 2026 BeWell" }
+              footer: { text: "© 2026 BeWell" },
+              about: { 
+                vision: "Our vision is to transform the skyline while respecting the rich cultural heritage of our surroundings.",
+                story: "Founded on the principles of excellence and innovation, B Well Real Estate has established itself as the premier developer of luxury properties."
+              }
             }).save();
         }
       } catch (err) {
@@ -63,6 +68,7 @@ export class SiteContentService implements OnModuleInit {
       doc.projectsSection = { ...doc.projectsSection, ...(data.projectsSection || {}) };
       doc.certifications = { ...doc.certifications, ...(data.certifications || {}) };
       doc.footer = { ...doc.footer, ...(data.footer || {}) };
+      doc.about = { ...doc.about, ...(data.about || {}) };
       await doc.save();
     }
     return this.mapToDto(doc);
@@ -74,7 +80,8 @@ export class SiteContentService implements OnModuleInit {
       hero: doc.hero,
       projectsSection: doc.projectsSection,
       certifications: doc.certifications,
-      footer: doc.footer
+      footer: doc.footer,
+      about: doc.about
     };
   }
 }

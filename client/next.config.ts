@@ -6,7 +6,7 @@ const nextConfig: NextConfig = {
     NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL || "/api",
   },
   async rewrites() {
-    const backendUrl = process.env.NEXT_INTERNAL_API_URL || 'http://backend:3001';
+    const backendUrl = process.env.NEXT_INTERNAL_API_URL || 'http://localhost:3001';
     return [
       {
         source: '/api/:path*',

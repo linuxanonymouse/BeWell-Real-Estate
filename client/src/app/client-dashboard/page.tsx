@@ -54,28 +54,26 @@ export default function ClientDashboard() {
   if (loading) return <div className="min-h-screen bg-[#050505]" />;
 
   return (
-    <div className="min-h-screen bg-[#050505] text-white">
-      <Navbar onScheduleClick={() => {}} />
-      
-      <main className="pt-32 pb-24 px-6 md:px-12 lg:px-24 max-w-7xl mx-auto">
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 mb-12 border-b border-white/10 pb-8">
-          <div>
-            <h1 className="text-4xl md:text-5xl font-serif tracking-wider uppercase mb-2 text-[#c09b62]">
-              Welcome, {user?.name}
-            </h1>
-            <p className="text-gray-400 font-sans text-sm tracking-widest uppercase">Client Dashboard</p>
-          </div>
-          <div className="flex items-center gap-4">
-            <button 
-              onClick={handleLogout}
-              className="flex items-center gap-2 px-4 py-2 text-xs font-sans tracking-widest uppercase border border-white/20 hover:border-red-500 hover:text-red-500 transition-colors rounded"
-            >
-              <LogOut className="w-4 h-4" /> Logout
-            </button>
-          </div>
+    <main className="pt-32 pb-24 px-6 md:px-12 lg:px-24 max-w-7xl mx-auto">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 mb-12 border-b border-white/10 pb-8">
+        <div>
+          <h1 className="text-4xl md:text-5xl font-serif tracking-wider uppercase mb-2 text-[#c09b62]">
+            Welcome, {user?.name}
+          </h1>
+          <p className="text-gray-400 font-sans text-sm tracking-widest uppercase">Client Dashboard</p>
         </div>
+        <div className="flex items-center gap-4">
+          <button 
+            onClick={handleLogout}
+            className="flex items-center gap-2 px-4 py-2 text-xs font-sans tracking-widest uppercase border border-white/20 hover:border-red-500 hover:text-red-500 transition-colors rounded"
+          >
+            <LogOut className="w-4 h-4" />
+            Sign Out
+          </button>
+        </div>
+      </div>
 
-        <div className="mb-8 flex justify-between items-center">
+        <div className="mb-8 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
           <h2 className="text-2xl font-serif uppercase tracking-widest">My Projects</h2>
           <div className="flex gap-3">
             <Link 
@@ -139,6 +137,5 @@ export default function ClientDashboard() {
           </div>
         )}
       </main>
-    </div>
   );
 }

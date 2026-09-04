@@ -14,8 +14,14 @@ export class TicketMessage {
   @Prop({ required: true })
   senderRole: string; // 'client' | 'superadmin' | 'support'
 
-  @Prop({ required: true })
+  @Prop({ default: '' })
   text: string;
+
+  @Prop()
+  attachmentUrl?: string;
+
+  @Prop()
+  attachmentType?: string; // 'image' | 'video'
 
   @Prop({ default: Date.now })
   date: Date;
@@ -39,6 +45,12 @@ export class Ticket {
 
   @Prop({ type: [TicketMessageSchema], default: [] })
   messages: TicketMessage[];
+
+  @Prop({ default: false })
+  hasUnreadForAdmin: boolean;
+
+  @Prop({ default: false })
+  hasUnreadForClient: boolean;
 }
 
 export const TicketSchema = SchemaFactory.createForClass(Ticket);

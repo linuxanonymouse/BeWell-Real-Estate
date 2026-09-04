@@ -1,7 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Search, Mail, Phone, Clock } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { Search, Mail, Phone, Clock, MessageSquare } from "lucide-react";
 
 import { getAuthHeader } from "../layout";
 
@@ -18,6 +19,42 @@ interface Lead {
 export default function AdminLeads() {
   const [leads, setLeads] = useState<Lead[]>([]);
   const [filter, setFilter] = useState("All");
+  const [clients, setClients] = useState<any[]>([]);
+  const router = useRouter();
+
+  const fetchClients = async () => {
+    try {
+      const res = await fetch("/api/auth/users", { headers: getAuthHeader() });
+      if (res.ok) {
+        const users = await res.json();
+        setClients(users.filter((u: any) => u.role === 'client'));
+      }
+    } catch (e) { console.error(e); }
+  };
+
+  const handleStartChat = async (lead: Lead) => {
+    const matchedClient = clients.find(c => c.email?.toLowerCase() === lead.email?.toLowerCase());
+    if (!matchedClient) {
+      alert(`No registered account found for ${lead.email}. The lead must register as a client first.`);
+      return;
+    }
+    const token = localStorage.getItem("token") || localStorage.getItem("admin_token");
+    try {
+      const res = await fetch("/api/tickets/admin", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+        body: JSON.stringify({
+          clientId: matchedClient.id,
+          clientName: matchedClient.name,
+          department: "management",
+          text: `Following up on your inquiry: "${lead.message}"`
+        })
+      });
+      if (res.ok) {
+        router.push("/admin/tickets");
+      }
+    } catch (e) { console.error(e); }
+  };
 
   const fetchLeads = async () => {
     try {
@@ -36,16 +73,19 @@ export default function AdminLeads() {
 
   useEffect(() => {
     fetchLeads();
+    fetchClients();
   }, []);
 
   const updateStatus = async (id: string, newStatus: string) => {
     try {
-      await fetch(`/api/leads/${id}/status`, {
+      const res = await fetch(`/api/leads/${id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json", ...getAuthHeader() },
         body: JSON.stringify({ status: newStatus }),
       });
-      fetchLeads();
+      if (res.ok) {
+        fetchLeads();
+      }
     } catch (error) {
       console.error("Failed to update status", error);
     }
@@ -133,8 +173,11 @@ export default function AdminLeads() {
                 <option value="Converted">Mark as Converted</option>
                 <option value="Lost">Mark as Lost</option>
               </select>
-              <button className="w-full bg-zinc-800 hover:bg-zinc-700 text-white rounded-lg px-4 py-3 text-xs tracking-widest uppercase transition-colors mt-auto">
-                Reply via Email
+              <button 
+                onClick={() => handleStartChat(lead)}
+                className="w-full bg-[#c09b62]/10 hover:bg-[#c09b62]/20 text-[#c09b62] border border-[#c09b62]/20 rounded-lg px-4 py-3 text-xs tracking-widest uppercase transition-colors mt-auto flex items-center justify-center gap-2"
+              >
+                <MessageSquare className="w-3 h-3" /> Start Chat
               </button>
             </div>
           </div>

@@ -16,6 +16,9 @@ export class SiteContent {
 
   @Prop({ type: Object, default: {} })
   footer: any;
+
+  @Prop({ type: Object, default: {} })
+  about: any;
 }
 
 export const SiteContentSchema = SchemaFactory.createForClass(SiteContent);

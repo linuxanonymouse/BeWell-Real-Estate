@@ -3,7 +3,8 @@
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { Building2, LayoutDashboard, Users, MessageSquare, Send, LogOut } from "lucide-react";
+import { Building2, LayoutDashboard, Users, MessageSquare, Send, LogOut, Bell } from "lucide-react";
+import { useNotifications } from "@/hooks/useNotifications";
 
 export function getAuthHeader(): Record<string, string> {
   if (typeof window !== "undefined") {
@@ -34,12 +35,15 @@ export default function AdminLayout({
   const pathname = usePathname();
   const router = useRouter();
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [userRole, setUserRole] = useState<string>("superadmin");
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const { unreadCount } = useNotifications();
 
   useEffect(() => {
     if (pathname === "/admin/login") return;
     
     const token = localStorage.getItem("admin_token");
+    const userStr = localStorage.getItem("user");
     if (token) {
       try {
         const payload = JSON.parse(atob(token.split('.')[1]));
@@ -49,6 +53,21 @@ export default function AdminLayout({
           return;
         }
         setIsAuthenticated(true);
+        let role = payload.role || "superadmin";
+        if (userStr && userStr !== "undefined" && userStr !== "null") {
+          try {
+            const parsedUser = JSON.parse(userStr);
+            if (parsedUser?.role) role = parsedUser.role;
+          } catch (err) {}
+        }
+        
+        if (role === 'client') {
+          localStorage.removeItem("admin_token");
+          window.location.href = "/admin/login";
+          return;
+        }
+
+        setUserRole(role);
       } catch (e) {
         localStorage.removeItem("admin_token");
         window.location.href = "/admin/login";
@@ -60,6 +79,8 @@ export default function AdminLayout({
 
   const handleLogout = () => {
     localStorage.removeItem("admin_token");
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
     router.push("/admin/login");
   };
 
@@ -71,14 +92,19 @@ export default function AdminLayout({
     return null; // Return empty until we redirect
   }
 
-  const navItems = [
-    { name: "Dashboard", href: "/admin", icon: LayoutDashboard },
-    { name: "Projects", href: "/admin/projects", icon: Building2 },
-    { name: "Team Members", href: "/admin/team", icon: Users },
-    { name: "Inquiries & Leads", href: "/admin/leads", icon: MessageSquare },
-    { name: "Site Content", href: "/admin/content", icon: LayoutDashboard },
-    { name: "Telegram Settings", href: "/admin/telegram", icon: Send },
+  const allNavItems = [
+    { name: "Dashboard", href: "/admin", icon: LayoutDashboard, roles: ['superadmin'] },
+    { name: "Clients", href: "/admin/clients", icon: Users, roles: ['superadmin'] },
+    { name: "Projects", href: "/admin/projects", icon: Building2, roles: ['superadmin', 'support'] },
+    { name: "Messages", href: "/admin/tickets", icon: MessageSquare, roles: ['superadmin', 'support'] },
+    { name: "Team Members", href: "/admin/team", icon: Users, roles: ['superadmin'] },
+    { name: "Inquiries & Leads", href: "/admin/leads", icon: MessageSquare, roles: ['superadmin', 'support'] },
+    { name: "Site Content", href: "/admin/content", icon: LayoutDashboard, roles: ['superadmin'] },
+    { name: "Telegram Settings", href: "/admin/telegram", icon: Send, roles: ['superadmin'] },
+    { name: "Settings", href: "/admin/settings", icon: Users, roles: ['superadmin', 'support'] },
   ];
+
+  const navItems = allNavItems.filter(item => item.roles.includes(userRole));
 
   return (
     <div className="min-h-screen bg-[#0a0a0a] text-zinc-300 flex flex-col md:flex-row font-sans">
@@ -97,11 +123,17 @@ export default function AdminLayout({
 
       {/* Sidebar */}
       <aside className={`${isMobileMenuOpen ? 'flex' : 'hidden'} md:flex w-full md:w-64 bg-[#050505] border-b md:border-b-0 md:border-r border-zinc-900 p-6 flex-col md:h-screen sticky top-[69px] md:top-0 z-40 max-h-[calc(100vh-69px)] md:max-h-screen overflow-y-auto`}>
-        <div className="hidden md:block mb-12">
+        <div className="hidden md:flex mb-12 items-center justify-between">
           <Link href="/">
             <h1 className="text-xl font-serif tracking-widest uppercase text-white hover:text-[#c09b62] transition-colors">
               BWell <span className="text-[#c09b62] italic block text-sm mt-1">Admin Portal</span>
             </h1>
+          </Link>
+          <Link href="/admin/tickets" className="relative p-2 text-zinc-400 hover:text-[#c09b62] transition-colors">
+            <Bell className="w-5 h-5" />
+            {unreadCount > 0 && (
+              <span className="absolute top-1 right-1 w-2.5 h-2.5 bg-[#c09b62] rounded-full ring-2 ring-[#050505] animate-pulse" />
+            )}
           </Link>
         </div>
         
@@ -114,14 +146,21 @@ export default function AdminLayout({
                 key={item.name}
                 href={item.href}
                 onClick={() => setIsMobileMenuOpen(false)}
-                className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-300 text-sm tracking-wide ${
+                className={`flex items-center justify-between px-4 py-3 rounded-lg transition-all duration-300 text-sm tracking-wide ${
                   isActive 
                     ? "bg-[#c09b62]/10 text-[#c09b62] border border-[#c09b62]/20" 
                     : "text-zinc-500 hover:text-zinc-200 hover:bg-zinc-900"
                 }`}
               >
-                <Icon className="w-4 h-4" />
-                {item.name}
+                <div className="flex items-center gap-3">
+                  <Icon className="w-4 h-4" />
+                  {item.name}
+                </div>
+                {item.name === "Messages" && unreadCount > 0 && (
+                  <span className="bg-[#c09b62] text-black text-[10px] font-semibold px-2 py-0.5 rounded-full">
+                    {unreadCount}
+                  </span>
+                )}
               </Link>
             );
           })}

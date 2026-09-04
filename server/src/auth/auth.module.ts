@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Module, forwardRef } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { AuthController } from './auth.controller';
 import { PassportModule } from '@nestjs/passport';
@@ -7,6 +7,8 @@ import { JwtStrategy } from './jwt.strategy';
 
 import { MongooseModule } from '@nestjs/mongoose';
 import { User, UserSchema } from './user.schema';
+import { TelegramModule } from '../telegram/telegram.module';
+import { ProjectsModule } from '../projects/projects.module';
 
 @Module({
   imports: [
@@ -16,8 +18,11 @@ import { User, UserSchema } from './user.schema';
       secret: 'super-secret-key-for-bewell-admin',
       signOptions: { expiresIn: '30d' },
     }),
+    forwardRef(() => TelegramModule),
+    forwardRef(() => ProjectsModule),
   ],
   providers: [AuthService, JwtStrategy],
   controllers: [AuthController],
+  exports: [AuthService],
 })
 export class AuthModule {}

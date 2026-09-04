@@ -16,11 +16,23 @@ services:
     environment:
       - MONGO_URI=mongodb://mongodb:27017/bewell
       - JWT_SECRET=BewellSuperSecretKey2026
+      - OLLAMA_URL=http://ollama:11434
     volumes:
       - ./server/uploads:/app/uploads
       - ./server/data:/app/data
     depends_on:
       - mongodb
+      - ollama
+
+  ollama:
+    image: ollama/ollama:latest
+    container_name: bewell_ollama
+    ports:
+      - "11434:11434"
+    volumes:
+      - bewell_ollama_data:/root/.ollama
+    # Entrypoint override to pull the model on startup, then start the server
+    entrypoint: ["/bin/sh", "-c", "ollama serve & sleep 5 && ollama pull tinyllama && wait"]
 
   frontend:
     build:
@@ -35,3 +47,4 @@ services:
 
 volumes:
   bewell_mongo_data:
+  bewell_ollama_data:

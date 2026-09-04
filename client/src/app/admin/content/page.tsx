@@ -8,11 +8,12 @@ export default function AdminSiteContent() {
   const [content, setContent] = useState<any>(null);
   const [status, setStatus] = useState<'idle' | 'saving' | 'success' | 'error'>('idle');
 
-  const defaultContent = {
+    const defaultContent = {
     hero: { titleLine1: "Building", titleLine2: "Beyond", titleHighlight: "Imagination", subtitle: "We don't just build buildings, we build legacies." },
     projectsSection: { titleLine1: "Iconic Projects", titleLine2: "That Define", titleHighlight: "Tomorrow", subtitle: "Explore our signature projects across prime locations." },
     certifications: { titleLine1: "Trusted By", titleLine2: "Those Who", titleHighlight: "Know Excellence", subtitle: "Our commitment to quality and timely delivery has earned us the trust of industry leaders.", quote: "\"Their dedication, professionalism, and exceptional execution have made them our most trusted development partner.\"", quoteAuthor: "CEO, MVP Developers" },
-    footer: { titleLine1: "Let's Build", titleLine2: "The Future", titleHighlight: "Together", description: "Building more than structures, we build trust, relationships, and a better tomorrow.", email: "info@bewell.com", phone: "+251 912 345 6789", location: "Addis Ababa" }
+    footer: { titleLine1: "Let's Build", titleLine2: "The Future", titleHighlight: "Together", description: "Building more than structures, we build trust, relationships, and a better tomorrow.", email: "info@bewell.com", phone: "+251 912 345 6789", location: "Addis Ababa" },
+    about: { vision: "Our vision is to transform the skyline while respecting the rich cultural heritage of our surroundings.", story: "Founded on the principles of excellence and innovation, B Well Real Estate has established itself as the premier developer of luxury properties in Addis Ababa." }
   };
 
   useEffect(() => {
@@ -28,6 +29,7 @@ export default function AdminSiteContent() {
             projectsSection: { ...defaultContent.projectsSection, ...(data?.projectsSection || {}) },
             certifications: { ...defaultContent.certifications, ...(data?.certifications || {}) },
             footer: { ...defaultContent.footer, ...(data?.footer || {}) },
+            about: { ...defaultContent.about, ...(data?.about || {}) },
           });
         } else {
           setContent(defaultContent);
@@ -212,6 +214,136 @@ export default function AdminSiteContent() {
                 <label className="text-[10px] uppercase tracking-widest text-zinc-500 font-sans">Location</label>
                 <input required value={content.footer.location} onChange={e => handleChange('footer', 'location', e.target.value)}
                   className="bg-black border border-zinc-900 rounded-xl px-4 py-3 text-sm text-white focus:border-[#c09b62]/50 outline-none transition-all font-sans" />
+              </div>
+            </div>
+          </div>
+          
+          {/* About Page */}
+          <div className="flex flex-col gap-6">
+            <h2 className="text-[#c09b62] text-sm uppercase tracking-widest font-sans pb-2 border-b border-zinc-900">About Page — Hero</h2>
+            <div className="grid grid-cols-2 gap-6">
+              <div className="flex flex-col gap-2">
+                <label className="text-[10px] uppercase tracking-widest text-zinc-500 font-sans">Hero Title (Gold Word)</label>
+                <input value={content.about.heroHighlight || ''} onChange={e => handleChange('about', 'heroHighlight', e.target.value)}
+                  placeholder="e.g. Legacy"
+                  className="bg-black border border-zinc-900 rounded-xl px-4 py-3 text-sm text-[#c09b62] focus:border-[#c09b62]/50 outline-none transition-all font-sans" />
+              </div>
+              <div className="flex flex-col gap-2">
+                <label className="text-[10px] uppercase tracking-widest text-zinc-500 font-sans">Hero Title (Rest)</label>
+                <input value={content.about.heroTitle || ''} onChange={e => handleChange('about', 'heroTitle', e.target.value)}
+                  placeholder="e.g. Beyond Imagination"
+                  className="bg-black border border-zinc-900 rounded-xl px-4 py-3 text-sm text-white focus:border-[#c09b62]/50 outline-none transition-all font-sans" />
+              </div>
+              <div className="col-span-2 flex flex-col gap-2">
+                <label className="text-[10px] uppercase tracking-widest text-zinc-500 font-sans">Hero Subtitle</label>
+                <textarea value={content.about.heroSubtitle || ''} onChange={e => handleChange('about', 'heroSubtitle', e.target.value)}
+                  placeholder="e.g. B Well Real Estate is redefining luxury living..."
+                  className="bg-black border border-zinc-900 rounded-xl px-4 py-3 text-sm text-white focus:border-[#c09b62]/50 outline-none transition-all font-sans min-h-[80px]" />
+              </div>
+            </div>
+          </div>
+
+          <div className="flex flex-col gap-6">
+            <h2 className="text-[#c09b62] text-sm uppercase tracking-widest font-sans pb-2 border-b border-zinc-900">About Page — Our Story</h2>
+            <div className="grid grid-cols-1 gap-6">
+              <div className="flex flex-col gap-2">
+                <label className="text-[10px] uppercase tracking-widest text-zinc-500 font-sans">Section Heading</label>
+                <input value={content.about.storySectionTitle || ''} onChange={e => handleChange('about', 'storySectionTitle', e.target.value)}
+                  placeholder="e.g. Shaping the Future of Urban Living"
+                  className="bg-black border border-zinc-900 rounded-xl px-4 py-3 text-sm text-white focus:border-[#c09b62]/50 outline-none transition-all font-sans" />
+              </div>
+              <div className="flex flex-col gap-2">
+                <label className="text-[10px] uppercase tracking-widest text-zinc-500 font-sans">Our Story</label>
+                <textarea value={content.about.story || ''} onChange={e => handleChange('about', 'story', e.target.value)}
+                  className="bg-black border border-zinc-900 rounded-xl px-4 py-3 text-sm text-white focus:border-[#c09b62]/50 outline-none transition-all font-sans min-h-[120px]" />
+              </div>
+              <div className="flex flex-col gap-2">
+                <label className="text-[10px] uppercase tracking-widest text-zinc-500 font-sans">Middle Paragraph</label>
+                <textarea value={content.about.storyMiddle || ''} onChange={e => handleChange('about', 'storyMiddle', e.target.value)}
+                  placeholder="e.g. We don't just build structures; we create communities..."
+                  className="bg-black border border-zinc-900 rounded-xl px-4 py-3 text-sm text-white focus:border-[#c09b62]/50 outline-none transition-all font-sans min-h-[100px]" />
+              </div>
+              <div className="flex flex-col gap-2">
+                <label className="text-[10px] uppercase tracking-widest text-zinc-500 font-sans">Our Vision</label>
+                <textarea value={content.about.vision || ''} onChange={e => handleChange('about', 'vision', e.target.value)}
+                  className="bg-black border border-zinc-900 rounded-xl px-4 py-3 text-sm text-white focus:border-[#c09b62]/50 outline-none transition-all font-sans min-h-[120px]" />
+              </div>
+            </div>
+          </div>
+
+          <div className="flex flex-col gap-6">
+            <h2 className="text-[#c09b62] text-sm uppercase tracking-widest font-sans pb-2 border-b border-zinc-900">About Page — Stats &amp; Values</h2>
+            <div className="grid grid-cols-2 gap-6">
+              <div className="flex flex-col gap-2">
+                <label className="text-[10px] uppercase tracking-widest text-zinc-500 font-sans">Stat Number (e.g. 15+)</label>
+                <input value={content.about.statNumber || ''} onChange={e => handleChange('about', 'statNumber', e.target.value)}
+                  className="bg-black border border-zinc-900 rounded-xl px-4 py-3 text-sm text-white focus:border-[#c09b62]/50 outline-none transition-all font-sans" />
+              </div>
+              <div className="flex flex-col gap-2">
+                <label className="text-[10px] uppercase tracking-widest text-zinc-500 font-sans">Stat Label</label>
+                <input value={content.about.statLabel || ''} onChange={e => handleChange('about', 'statLabel', e.target.value)}
+                  placeholder="e.g. Years of Excellence"
+                  className="bg-black border border-zinc-900 rounded-xl px-4 py-3 text-sm text-white focus:border-[#c09b62]/50 outline-none transition-all font-sans" />
+              </div>
+            </div>
+            <p className="text-zinc-600 text-[10px] uppercase tracking-widest font-sans mt-2">Core Value 1</p>
+            <div className="grid grid-cols-2 gap-6">
+              <div className="flex flex-col gap-2">
+                <label className="text-[10px] uppercase tracking-widest text-zinc-500 font-sans">Title</label>
+                <input value={content.about.value1Title || ''} onChange={e => handleChange('about', 'value1Title', e.target.value)}
+                  placeholder="e.g. Uncompromising Quality"
+                  className="bg-black border border-zinc-900 rounded-xl px-4 py-3 text-sm text-white focus:border-[#c09b62]/50 outline-none transition-all font-sans" />
+              </div>
+              <div className="flex flex-col gap-2">
+                <label className="text-[10px] uppercase tracking-widest text-zinc-500 font-sans">Description</label>
+                <input value={content.about.value1Desc || ''} onChange={e => handleChange('about', 'value1Desc', e.target.value)}
+                  className="bg-black border border-zinc-900 rounded-xl px-4 py-3 text-sm text-white focus:border-[#c09b62]/50 outline-none transition-all font-sans" />
+              </div>
+            </div>
+            <p className="text-zinc-600 text-[10px] uppercase tracking-widest font-sans">Core Value 2</p>
+            <div className="grid grid-cols-2 gap-6">
+              <div className="flex flex-col gap-2">
+                <label className="text-[10px] uppercase tracking-widest text-zinc-500 font-sans">Title</label>
+                <input value={content.about.value2Title || ''} onChange={e => handleChange('about', 'value2Title', e.target.value)}
+                  placeholder="e.g. Visionary Architecture"
+                  className="bg-black border border-zinc-900 rounded-xl px-4 py-3 text-sm text-white focus:border-[#c09b62]/50 outline-none transition-all font-sans" />
+              </div>
+              <div className="flex flex-col gap-2">
+                <label className="text-[10px] uppercase tracking-widest text-zinc-500 font-sans">Description</label>
+                <input value={content.about.value2Desc || ''} onChange={e => handleChange('about', 'value2Desc', e.target.value)}
+                  className="bg-black border border-zinc-900 rounded-xl px-4 py-3 text-sm text-white focus:border-[#c09b62]/50 outline-none transition-all font-sans" />
+              </div>
+            </div>
+            <p className="text-zinc-600 text-[10px] uppercase tracking-widest font-sans">Core Value 3</p>
+            <div className="grid grid-cols-2 gap-6">
+              <div className="flex flex-col gap-2">
+                <label className="text-[10px] uppercase tracking-widest text-zinc-500 font-sans">Title</label>
+                <input value={content.about.value3Title || ''} onChange={e => handleChange('about', 'value3Title', e.target.value)}
+                  placeholder="e.g. Client-Centric Approach"
+                  className="bg-black border border-zinc-900 rounded-xl px-4 py-3 text-sm text-white focus:border-[#c09b62]/50 outline-none transition-all font-sans" />
+              </div>
+              <div className="flex flex-col gap-2">
+                <label className="text-[10px] uppercase tracking-widest text-zinc-500 font-sans">Description</label>
+                <input value={content.about.value3Desc || ''} onChange={e => handleChange('about', 'value3Desc', e.target.value)}
+                  className="bg-black border border-zinc-900 rounded-xl px-4 py-3 text-sm text-white focus:border-[#c09b62]/50 outline-none transition-all font-sans" />
+              </div>
+            </div>
+          </div>
+
+          <div className="flex flex-col gap-6">
+            <h2 className="text-[#c09b62] text-sm uppercase tracking-widest font-sans pb-2 border-b border-zinc-900">About Page — Call To Action</h2>
+            <div className="grid grid-cols-1 gap-6">
+              <div className="flex flex-col gap-2">
+                <label className="text-[10px] uppercase tracking-widest text-zinc-500 font-sans">CTA Title</label>
+                <input value={content.about.ctaTitle || ''} onChange={e => handleChange('about', 'ctaTitle', e.target.value)}
+                  placeholder="e.g. Ready to Experience Luxury?"
+                  className="bg-black border border-zinc-900 rounded-xl px-4 py-3 text-sm text-white focus:border-[#c09b62]/50 outline-none transition-all font-sans" />
+              </div>
+              <div className="flex flex-col gap-2">
+                <label className="text-[10px] uppercase tracking-widest text-zinc-500 font-sans">CTA Subtitle</label>
+                <textarea value={content.about.ctaSubtitle || ''} onChange={e => handleChange('about', 'ctaSubtitle', e.target.value)}
+                  placeholder="e.g. Connect with our team to discover our portfolio..."
+                  className="bg-black border border-zinc-900 rounded-xl px-4 py-3 text-sm text-white focus:border-[#c09b62]/50 outline-none transition-all font-sans min-h-[80px]" />
               </div>
             </div>
           </div>

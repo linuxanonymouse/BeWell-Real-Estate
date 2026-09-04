@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Plus, Edit2, Trash2, X, BarChart3, Eye, EyeOff, CheckCircle } from "lucide-react";
+import { Plus, Edit2, Trash2, X, BarChart3, Eye, EyeOff, CheckCircle, Users } from "lucide-react";
 import Link from "next/link";
 
 import { getAuthHeader } from "../layout";
@@ -13,12 +13,22 @@ interface Project {
   status: string;
   value: string;
   image?: string;
+  approvalStatus?: string;
+  ownerId?: string;
+  isPublic?: boolean;
 }
 
 export default function AdminProjects() {
   const [projects, setProjects] = useState<Project[]>([]);
+  const [clients, setClients] = useState<any[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingProject, setEditingProject] = useState<Project | null>(null);
+  
+  // Assign modal
+  const [assignModalOpen, setAssignModalOpen] = useState(false);
+  const [assigningProject, setAssigningProject] = useState<Project | null>(null);
+  const [selectedClientId, setSelectedClientId] = useState("");
+  const [isAssigning, setIsAssigning] = useState(false);
   
   // Form state
   const [name, setName] = useState("");
@@ -30,7 +40,7 @@ export default function AdminProjects() {
 
   const fetchProjects = async () => {
     try {
-      const res = await fetch("/api/projects", { cache: "no-store" });
+      const res = await fetch("/api/projects", { cache: "no-store", headers: getAuthHeader() });
       const data = await res.json();
       setProjects(data);
     } catch (error) {
@@ -38,8 +48,20 @@ export default function AdminProjects() {
     }
   };
 
+  const fetchClients = async () => {
+    try {
+      const res = await fetch("/api/auth/clients", { headers: getAuthHeader() });
+      if (res.ok) {
+        setClients(await res.json());
+      }
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
   useEffect(() => {
     fetchProjects();
+    fetchClients();
   }, []);
 
   const openModal = (project?: Project) => {
@@ -156,6 +178,32 @@ export default function AdminProjects() {
     }
   };
 
+  const handleAssignSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!selectedClientId || !assigningProject) return;
+    setIsAssigning(true);
+    try {
+      const res = await fetch("/api/auth/assign-project", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", ...getAuthHeader() },
+        body: JSON.stringify({ clientId: selectedClientId, projectId: assigningProject.id }),
+      });
+      if (res.ok) {
+        setAssignModalOpen(false);
+        setSelectedClientId("");
+        setAssigningProject(null);
+        alert("Client assigned successfully! They have been notified via Telegram.");
+        fetchProjects();
+      } else {
+        alert("Failed to assign client");
+      }
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setIsAssigning(false);
+    }
+  };
+
   return (
     <div className="flex flex-col gap-8">
       <div className="flex justify-between items-center">
@@ -216,13 +264,16 @@ export default function AdminProjects() {
                   </button>
                 </td>
                 <td className="p-6 flex justify-end gap-3">
+                  <button onClick={() => { setAssigningProject(project); setAssignModalOpen(true); }} className="text-zinc-500 hover:text-green-400 transition-colors" title="Assign Client">
+                    <Users className="w-4 h-4" />
+                  </button>
                   <Link href={`/admin/projects/${project.id}`} className="text-zinc-500 hover:text-[#c09b62] transition-colors" title="Resources & Inflation">
                     <BarChart3 className="w-4 h-4" />
                   </Link>
-                  <button onClick={() => openModal(project)} className="text-zinc-500 hover:text-white transition-colors">
+                  <button onClick={() => openModal(project)} className="text-zinc-500 hover:text-white transition-colors" title="Edit">
                     <Edit2 className="w-4 h-4" />
                   </button>
-                  <button onClick={() => handleDelete(project.id)} className="text-zinc-500 hover:text-red-400 transition-colors">
+                  <button onClick={() => handleDelete(project.id)} className="text-zinc-500 hover:text-red-400 transition-colors" title="Delete">
                     <Trash2 className="w-4 h-4" />
                   </button>
                 </td>
@@ -277,21 +328,25 @@ export default function AdminProjects() {
                 />
               </div>
               <div className="flex flex-col gap-2">
-                <label className="text-xs uppercase tracking-widest text-zinc-400">Project Image</label>
+                <label className="text-xs uppercase tracking-widest text-zinc-400">Project Media</label>
                 <div className="flex items-center gap-4">
                   <div className="w-16 h-16 bg-black border border-zinc-800 rounded-lg overflow-hidden flex items-center justify-center shrink-0">
                     {image ? (
-                      <img src={image} alt="Preview" className="w-full h-full object-cover" />
+                      image.match(/\.(mp4|webm|mov)$/i) ? (
+                        <video src={image} className="w-full h-full object-cover" autoPlay muted loop />
+                      ) : (
+                        <img src={image} alt="Preview" className="w-full h-full object-cover" />
+                      )
                     ) : (
                       <div className="text-zinc-700 text-xs">None</div>
                     )}
                   </div>
                   <div className="flex-1">
-                    <label className="cursor-pointer bg-zinc-800 hover:bg-zinc-700 border border-zinc-700 rounded-lg px-4 py-2 text-xs text-white transition-colors flex items-center justify-center gap-2 max-w-[200px]">
-                      {isUploading ? 'Uploading...' : 'Upload Photo'}
+                    <label className="cursor-pointer bg-zinc-900 border border-zinc-800 px-4 py-2 rounded-lg text-xs uppercase tracking-widest hover:bg-zinc-800 transition-colors inline-block w-full text-center">
+                      {isUploading ? 'Uploading...' : 'Upload Media'}
                       <input 
                         type="file" 
-                        accept="image/*" 
+                        accept="image/*,video/*" 
                         className="hidden" 
                         onChange={handleImageUpload}
                         disabled={isUploading}
@@ -306,6 +361,50 @@ export default function AdminProjects() {
                 </button>
                 <button type="submit" disabled={isUploading} className="flex-1 py-3 bg-[#c09b62] rounded-lg text-black hover:bg-[#dfc499] transition-colors uppercase tracking-wider text-xs font-medium disabled:opacity-50">
                   {editingProject ? 'Save Changes' : 'Create Project'}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {assignModalOpen && assigningProject && (
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <div className="bg-zinc-900 border border-zinc-800 rounded-xl w-full max-w-lg overflow-hidden">
+            <div className="p-6 border-b border-zinc-800 flex justify-between items-center bg-black/20">
+              <div>
+                <h3 className="text-xl font-serif text-white uppercase tracking-wider">Assign Client</h3>
+                <p className="text-zinc-500 text-xs mt-1">Project: {assigningProject.name}</p>
+              </div>
+              <button onClick={() => { setAssignModalOpen(false); setAssigningProject(null); }} className="text-zinc-500 hover:text-white">
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+            <form onSubmit={handleAssignSubmit} className="p-6 flex flex-col gap-5">
+              <div className="flex flex-col gap-2">
+                <label className="text-xs uppercase tracking-widest text-zinc-400">Select Client</label>
+                {clients.length === 0 ? (
+                  <p className="text-zinc-500 text-sm">No registered clients yet.</p>
+                ) : (
+                  <select
+                    required
+                    value={selectedClientId}
+                    onChange={(e) => setSelectedClientId(e.target.value)}
+                    className="bg-black border border-zinc-800 rounded-lg p-3 text-white focus:border-[#c09b62] outline-none transition-colors"
+                  >
+                    <option value="">-- Choose a Client --</option>
+                    {clients.map((c: any) => (
+                      <option key={c.id} value={c.id}>{c.name} ({c.email})</option>
+                    ))}
+                  </select>
+                )}
+              </div>
+              <div className="mt-2 flex gap-4">
+                <button type="button" onClick={() => { setAssignModalOpen(false); setAssigningProject(null); }} className="flex-1 py-3 border border-zinc-700 rounded-lg text-zinc-300 hover:bg-zinc-800 transition-colors uppercase tracking-wider text-xs">
+                  Cancel
+                </button>
+                <button type="submit" disabled={isAssigning || !selectedClientId} className="flex-1 py-3 bg-[#c09b62] rounded-lg text-black hover:bg-[#dfc499] transition-colors uppercase tracking-wider text-xs font-medium disabled:opacity-50">
+                  {isAssigning ? "Assigning..." : "Assign Client"}
                 </button>
               </div>
             </form>

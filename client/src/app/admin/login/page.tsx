@@ -23,13 +23,22 @@ export default function AdminLogin() {
         body: JSON.stringify({ email, password }),
       });
 
-      if (!res.ok) {
+      if (res.ok) {
+        const data = await res.json();
+        
+        if (data.user.role === 'client') {
+          setError("Clients cannot access the admin portal.");
+          setIsLoading(false);
+          return;
+        }
+
+        localStorage.setItem("admin_token", data.access_token);
+        localStorage.setItem("token", data.access_token);
+        localStorage.setItem("user", JSON.stringify(data.user));
+        router.push("/admin");
+      } else {
         throw new Error("Invalid credentials");
       }
-
-      const data = await res.json();
-      localStorage.setItem("admin_token", data.access_token);
-      router.push("/admin");
     } catch (err) {
       setError("Invalid email or password.");
     } finally {

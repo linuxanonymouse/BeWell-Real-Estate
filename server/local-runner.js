@@ -9,8 +9,7 @@ async function run() {
   process.env.MONGO_URI = uri;
   process.env.PORT = '3001';
 
-  // We use cross-env style execution but in node
-  const nestProcess = spawn('npm.cmd', ['run', 'start:dev'], { stdio: 'inherit', shell: true });
+  const nestProcess = spawn('npm.cmd', ['run', 'start'], { stdio: 'inherit', shell: true });
   
   nestProcess.on('exit', code => {
     console.log(`NestJS process exited with code ${code}`);

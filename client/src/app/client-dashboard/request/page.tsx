@@ -17,7 +17,7 @@ export default function RequestProjectPage() {
     setLoading(true);
     setError("");
 
-    const token = localStorage.getItem("token");
+    const token = localStorage.getItem("token") || localStorage.getItem("admin_token");
     if (!token) {
       router.push("/auth/login");
       return;
@@ -46,9 +46,6 @@ export default function RequestProjectPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#050505] text-white">
-      <Navbar onScheduleClick={() => {}} />
-      
       <main className="pt-32 pb-24 px-6 md:px-12 lg:px-24 max-w-4xl mx-auto">
         <Link href="/client-dashboard" className="flex items-center gap-2 text-[#c09b62] text-xs uppercase tracking-widest mb-8 hover:underline">
           <ArrowLeft className="w-4 h-4" /> Back to Dashboard
@@ -106,6 +103,5 @@ export default function RequestProjectPage() {
           </p>
         </form>
       </main>
-    </div>
   );
 }
