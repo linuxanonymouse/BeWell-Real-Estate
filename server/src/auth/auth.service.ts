@@ -82,6 +82,13 @@ export class AuthService {
   async getProfile(userId: string) {
     const user = await this.userModel.findById(userId).exec();
     if (!user) throw new NotFoundException('User not found');
+    
+    // Auto-generate token for legacy users who don't have one
+    if (!user.telegramLinkToken) {
+      user.telegramLinkToken = Math.random().toString(36).substring(2, 10).toUpperCase();
+      await user.save();
+    }
+
     if ((user as any).banned) throw new UnauthorizedException('Your account has been suspended.');
     return {
       id: user._id.toString(),
