@@ -48,7 +48,8 @@ export default function LinkTelegramPage() {
     setChecking(false);
   };
 
-  const botLink = `https://t.me/Bwell_Real_estate_Bot?start=${token}`;
+  const botUsername = process.env.NEXT_PUBLIC_TELEGRAM_BOT_USERNAME || 'Bwell_Real_estate_Bot';
+  const botLink = `https://t.me/${botUsername}?start=${token}`;
 
   return (
     <main className="pt-32 pb-24 px-6 md:px-12 lg:px-24 max-w-4xl mx-auto flex flex-col items-center justify-center">
