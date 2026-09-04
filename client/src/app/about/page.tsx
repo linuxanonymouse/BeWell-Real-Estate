@@ -6,9 +6,12 @@ import AboutCTA from "@/components/AboutCTA";
 export default async function AboutPage() {
   let siteContent: any = {};
   try {
-    const res = await fetch("http://localhost:3001/site-content", { next: { revalidate: 0 } });
+    const backendUrl = process.env.NEXT_INTERNAL_API_URL || 'http://localhost:3001';
+    const res = await fetch(`${backendUrl}/site-content`, { next: { revalidate: 0 } });
     if (res.ok) siteContent = await res.json();
-  } catch (e) {}
+  } catch (e) {
+    console.error("Failed to fetch site content for About page", e);
+  }
 
   const about = siteContent.about || {};
 

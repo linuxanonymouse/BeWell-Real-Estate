@@ -80,7 +80,7 @@ export class TelegramService implements OnModuleInit {
 
       // Handle /start with a token for account linking
       if (text.startsWith('/start ')) {
-        const linkToken = text.replace('/start ', '').trim();
+        const linkToken = text.replace('/start ', '').trim().toUpperCase();
         if (linkToken) {
           return this.handleAccountLink(chatId, linkToken);
         }
@@ -106,6 +106,10 @@ export class TelegramService implements OnModuleInit {
       }
 
       if (!text.startsWith('/')) {
+        const potentialToken = text.trim().toUpperCase();
+        if (potentialToken.length === 8) {
+          return this.handleAccountLink(chatId, potentialToken);
+        }
         this.bot.sendMessage(chatId, "I didn't understand that. Type /start to see what I can do.");
       }
     });
