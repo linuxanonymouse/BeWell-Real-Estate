@@ -112,9 +112,12 @@ export default function AdminLayout({
       {/* Mobile Header */}
       <div className="md:hidden bg-[#050505] border-b border-zinc-900 p-4 flex items-center justify-between sticky top-0 z-50">
         <Link href="/">
-          <h1 className="text-lg font-serif tracking-widest uppercase text-white">
-            B WELL <span className="text-[#c09b62] italic text-xs">Admin</span>
-          </h1>
+          <div className="flex items-center overflow-visible">
+            <div className="h-10 w-auto overflow-visible -ml-8 mt-2">
+              <img src="/b-well-logo.png" alt="BeWell Real Estate Logo" className="h-full w-auto object-contain flex-shrink-0 scale-[2.5] origin-left" />
+            </div>
+            <span className="text-[#c09b62] italic text-xs font-serif z-10 ml-4">Admin</span>
+          </div>
         </Link>
         <button onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)} className="p-2 text-zinc-400 hover:text-white">
           <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d={isMobileMenuOpen ? "M6 18L18 6M6 6l12 12" : "M4 6h16M4 12h16M4 18h16"} /></svg>
@@ -123,17 +126,23 @@ export default function AdminLayout({
 
       {/* Sidebar */}
       <aside className={`${isMobileMenuOpen ? 'flex' : 'hidden'} md:flex w-full md:w-64 bg-[#050505] border-b md:border-b-0 md:border-r border-zinc-900 p-6 flex-col md:h-screen sticky top-[69px] md:top-0 z-40 max-h-[calc(100vh-69px)] md:max-h-screen overflow-y-auto`}>
-        <div className="hidden md:flex mb-12 items-center justify-between">
-          <Link href="/">
-            <h1 className="text-xl font-serif tracking-widest uppercase text-white hover:text-[#c09b62] transition-colors">
-              BWell <span className="text-[#c09b62] italic block text-sm mt-1">Admin Portal</span>
-            </h1>
-          </Link>
-          <Link href="/admin/tickets" className="relative p-2 text-zinc-400 hover:text-[#c09b62] transition-colors">
-            <Bell className="w-5 h-5" />
-            {unreadCount > 0 && (
-              <span className="absolute top-1 right-1 w-2.5 h-2.5 bg-[#c09b62] rounded-full ring-2 ring-[#050505] animate-pulse" />
-            )}
+        <div className="hidden md:flex mb-12 flex-col items-start relative w-full">
+          <div className="absolute top-0 right-0 z-50">
+            <Link href="/admin/tickets" className="relative p-2 text-zinc-400 hover:text-[#c09b62] transition-colors block">
+              <Bell className="w-5 h-5" />
+              {unreadCount > 0 && (
+                <span className="absolute top-1 right-1 w-2.5 h-2.5 bg-[#c09b62] rounded-full ring-2 ring-[#050505] animate-pulse" />
+              )}
+            </Link>
+          </div>
+          
+          <Link href="/" className="block w-full mt-2 overflow-visible">
+            <div className="flex flex-col gap-2 w-full hover:opacity-80 transition-opacity">
+              <div className="h-16 w-auto self-start overflow-visible -ml-12 mt-2">
+                <img src="/b-well-logo.png" alt="BeWell Real Estate Logo" className="h-full w-auto object-contain flex-shrink-0 scale-[2.5] origin-left" />
+              </div>
+              <span className="text-[#c09b62] italic text-sm font-serif relative z-10 mt-1 ml-1">Admin Portal</span>
+            </div>
           </Link>
         </div>
         

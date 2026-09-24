@@ -53,6 +53,16 @@ export class ProgressUpdate {
 
 export const ProgressUpdateSchema = SchemaFactory.createForClass(ProgressUpdate);
 
+@Schema({ _id: false })
+export class RoomGallery {
+  @Prop({ required: true })
+  name: string;
+
+  @Prop({ type: [String], default: [] })
+  images: string[];
+}
+export const RoomGallerySchema = SchemaFactory.createForClass(RoomGallery);
+
 @Schema()
 export class Project {
   @Prop({ required: true })
@@ -69,6 +79,18 @@ export class Project {
 
   @Prop()
   image: string;
+
+  @Prop()
+  video: string;
+
+  @Prop()
+  description: string;
+
+  @Prop({ type: [String], default: [] })
+  galleryImages: string[];
+
+  @Prop({ type: [RoomGallerySchema], default: [] })
+  rooms: RoomGallery[];
 
   @Prop({ type: [MaterialSchema], default: [] })
   materials: Material[];

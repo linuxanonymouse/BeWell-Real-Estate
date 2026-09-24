@@ -14,6 +14,8 @@ interface Project {
   status: string;
   value: string;
   image?: string;
+  video?: string;
+  galleryImages?: string[];
 }
 
 const staggerContainer = {
@@ -137,11 +139,15 @@ export default function ProjectsPage() {
                     transition={{ duration: 1.5, ease: "easeOut" }}
                     className="w-full h-full"
                   >
-                    <img 
-                      src={project.image || `${process.env.NEXT_PUBLIC_BASE_PATH || ''}/project-${(index % 2) + 1}.png`} 
-                      alt={project.name}
-                      className="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity duration-700"
-                    />
+                    {project.video ? (
+                      <video src={project.video} autoPlay muted loop playsInline className="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity duration-700" />
+                    ) : (
+                      <img 
+                        src={project.image || `${process.env.NEXT_PUBLIC_BASE_PATH || ''}/project-${(index % 2) + 1}.png`} 
+                        alt={project.name}
+                        className="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity duration-700"
+                      />
+                    )}
                   </motion.div>
                   <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-60 group-hover:opacity-20 transition-opacity duration-700 pointer-events-none" />
                   

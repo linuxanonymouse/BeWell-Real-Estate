@@ -2,9 +2,9 @@
 
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
-import { ArrowLeft, MapPin, Building2, CircleDollarSign } from "lucide-react";
+import { ArrowLeft, MapPin, Building2, CircleDollarSign, ChevronLeft, ChevronRight, X, Maximize2 } from "lucide-react";
 import Navbar from "@/components/layout/Navbar";
 import ContactModal from "@/components/ContactModal";
 
@@ -14,7 +14,11 @@ interface Project {
   location: string;
   status: string;
   value: string;
+  description?: string;
   image?: string;
+  video?: string;
+  galleryImages?: string[];
+  rooms?: { name: string; images: string[] }[];
   progressUpdates?: { text: string; images: string[]; date: string }[];
 }
 
@@ -32,6 +36,8 @@ export default function ProjectDetailsPage() {
   const [project, setProject] = useState<Project | null>(null);
   const [loading, setLoading] = useState(true);
   const [isContactModalOpen, setIsContactModalOpen] = useState(false);
+  const [lightboxOpen, setLightboxOpen] = useState(false);
+  const [lightboxIndex, setLightboxIndex] = useState(0);
 
   useEffect(() => {
     async function fetchProject() {
@@ -84,6 +90,11 @@ export default function ProjectDetailsPage() {
     );
   }
 
+  // Derived flattened gallery for lightbox
+  const allGalleryImages = project?.rooms 
+    ? project.rooms.flatMap(r => r.images)
+    : (project?.galleryImages || []);
+
   return (
     <main className="min-h-screen bg-[#050505] text-white pb-24">
       <Navbar onScheduleClick={() => setIsContactModalOpen(true)} />
@@ -96,11 +107,19 @@ export default function ProjectDetailsPage() {
           transition={{ duration: 1.5, ease: "easeOut" }}
           className="w-full h-full"
         >
-          <img 
-            src={project.image || `${process.env.NEXT_PUBLIC_BASE_PATH || ''}/project-${parseInt(id) % 2 === 0 ? 2 : 1}.png`} 
-            alt={project.name}
-            className="w-full h-full object-cover"
-          />
+          {project.video ? (
+            <video 
+              src={project.video}
+              autoPlay muted loop playsInline
+              className="w-full h-full object-cover"
+            />
+          ) : (
+            <img 
+              src={project.image || `${process.env.NEXT_PUBLIC_BASE_PATH || ''}/project-${parseInt(id) % 2 === 0 ? 2 : 1}.png`} 
+              alt={project.name}
+              className="w-full h-full object-cover"
+            />
+          )}
         </motion.div>
         <div className="absolute inset-0 bg-gradient-to-t from-[#050505] via-[#050505]/40 to-transparent pointer-events-none" />
         
@@ -132,17 +151,25 @@ export default function ProjectDetailsPage() {
             className="lg:col-span-7 lg:col-start-1 flex flex-col gap-6"
           >
             <h2 className="text-2xl md:text-3xl font-serif text-[#c09b62] italic">The Vision</h2>
-            <p className="text-gray-300 font-sans tracking-wide leading-loose text-sm md:text-base">
-              {project.name} stands as a testament to unparalleled architectural ambition and visionary design. 
-              Situated in the heart of {project.location}, this {project.status.toLowerCase()} project redefines 
-              the skyline and offers a lifestyle of uncompromised luxury. Every detail has been meticulously 
-              crafted to provide an extraordinary living experience that exceeds expectations.
-            </p>
-            <p className="text-gray-300 font-sans tracking-wide leading-loose text-sm md:text-base">
-              With an estimated value of {project.value}, it represents not just a residence, but a legacy. 
-              The development integrates sustainable practices with cutting-edge amenities, ensuring that 
-              it remains a timeless masterpiece for generations to come.
-            </p>
+            {project.description ? (
+              <p className="text-gray-300 font-sans tracking-wide leading-loose text-sm md:text-base whitespace-pre-wrap">
+                {project.description}
+              </p>
+            ) : (
+              <>
+                <p className="text-gray-300 font-sans tracking-wide leading-loose text-sm md:text-base">
+                  {project.name} stands as a testament to unparalleled architectural ambition and visionary design. 
+                  Situated in the heart of {project.location}, this {project.status.toLowerCase()} project redefines 
+                  the skyline and offers a lifestyle of uncompromised luxury. Every detail has been meticulously 
+                  crafted to provide an extraordinary living experience that exceeds expectations.
+                </p>
+                <p className="text-gray-300 font-sans tracking-wide leading-loose text-sm md:text-base">
+                  With an estimated value of {project.value}, it represents not just a residence, but a legacy. 
+                  The development integrates sustainable practices with cutting-edge amenities, ensuring that 
+                  it remains a timeless masterpiece for generations to come.
+                </p>
+              </>
+            )}
           </motion.div>
 
           {/* Sidebar Info */}
@@ -183,6 +210,94 @@ export default function ProjectDetailsPage() {
             </div>
           </motion.div>
         </div>
+        
+        {/* Luxury Photo Gallery Grouped By Room */}
+        {project.rooms && project.rooms.length > 0 ? (
+          <div className="mt-20 pt-16 border-t border-white/10 flex flex-col gap-16">
+            {project.rooms.map((room, roomIdx) => (
+              <motion.div 
+                key={roomIdx}
+                initial={{ opacity: 0, y: 40 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.8 }}
+              >
+                <div className="flex items-center gap-4 mb-8">
+                  <h2 className="text-2xl font-serif uppercase tracking-wider text-[#c09b62]">{room.name || 'Room'}</h2>
+                  <div className="h-px flex-1 bg-white/10" />
+                  <span className="text-zinc-500 text-xs font-sans tracking-widest uppercase">{room.images.length} Photos</span>
+                </div>
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                  {room.images.map((img, imgIdx) => {
+                    const label = img.split('/').pop()?.replace(/-\d+-\d+\.[^.]+$/, '').replace(/[-_]/g, ' ') || 'Photo';
+                    // Calculate global index for lightbox
+                    let globalIdx = 0;
+                    for(let i=0; i<roomIdx; i++) globalIdx += project.rooms![i].images.length;
+                    globalIdx += imgIdx;
+
+                    return (
+                      <motion.div 
+                        key={imgIdx}
+                        initial={{ opacity: 0, scale: 0.95 }}
+                        whileInView={{ opacity: 1, scale: 1 }}
+                        viewport={{ once: true }}
+                        transition={{ delay: imgIdx * 0.1, duration: 0.5 }}
+                        onClick={() => { setLightboxIndex(globalIdx); setLightboxOpen(true); }}
+                        className="group cursor-pointer relative aspect-[4/3] overflow-hidden rounded-lg border border-white/10 hover:border-[#c09b62]/50 transition-all duration-500"
+                      >
+                        <img src={img} alt={label} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                        <div className="absolute bottom-0 left-0 right-0 p-4 translate-y-full group-hover:translate-y-0 transition-transform duration-500">
+                          <p className="text-white text-xs font-sans tracking-widest uppercase capitalize">{label}</p>
+                        </div>
+                        <div className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
+                          <Maximize2 className="w-4 h-4 text-[#c09b62]" />
+                        </div>
+                      </motion.div>
+                    );
+                  })}
+                </div>
+              </motion.div>
+            ))}
+          </div>
+        ) : project.galleryImages && project.galleryImages.length > 0 && (
+          <motion.div 
+            initial={{ opacity: 0, y: 40 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 1.1 }}
+            className="mt-20 pt-16 border-t border-white/10"
+          >
+            <div className="flex items-center gap-4 mb-10">
+              <h2 className="text-2xl font-serif uppercase tracking-wider text-[#c09b62]">Interior Gallery</h2>
+              <div className="h-px flex-1 bg-white/10" />
+              <span className="text-zinc-500 text-xs font-sans tracking-widest uppercase">{project.galleryImages.length} Photos</span>
+            </div>
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+              {project.galleryImages.map((img, idx) => {
+                const label = img.split('/').pop()?.replace(/-\d+-\d+\.[^.]+$/, '').replace(/[-_]/g, ' ') || 'Photo';
+                return (
+                  <motion.div 
+                    key={idx}
+                    initial={{ opacity: 0, scale: 0.95 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ delay: 1.2 + idx * 0.1, duration: 0.5 }}
+                    onClick={() => { setLightboxIndex(idx); setLightboxOpen(true); }}
+                    className="group cursor-pointer relative aspect-[4/3] overflow-hidden rounded-lg border border-white/10 hover:border-[#c09b62]/50 transition-all duration-500"
+                  >
+                    <img src={img} alt={label} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                    <div className="absolute bottom-0 left-0 right-0 p-4 translate-y-full group-hover:translate-y-0 transition-transform duration-500">
+                      <p className="text-white text-xs font-sans tracking-widest uppercase capitalize">{label}</p>
+                    </div>
+                    <div className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
+                      <Maximize2 className="w-4 h-4 text-[#c09b62]" />
+                    </div>
+                  </motion.div>
+                );
+              })}
+            </div>
+          </motion.div>
+        )}
 
         {/* Progress Updates */}
         {project.progressUpdates && project.progressUpdates.length > 0 && (
@@ -213,6 +328,67 @@ export default function ProjectDetailsPage() {
         )}
 
       </div>
+
+      {/* Fullscreen Lightbox */}
+      <AnimatePresence>
+        {lightboxOpen && allGalleryImages.length > 0 && (
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[100] bg-black/95 backdrop-blur-xl flex items-center justify-center"
+            onClick={() => setLightboxOpen(false)}
+          >
+            {/* Close Button */}
+            <button onClick={() => setLightboxOpen(false)} className="absolute top-6 right-6 z-10 w-12 h-12 rounded-full border border-white/20 flex items-center justify-center text-white hover:border-[#c09b62] hover:text-[#c09b62] transition-colors">
+              <X className="w-5 h-5" />
+            </button>
+
+            {/* Counter */}
+            <div className="absolute top-6 left-6 text-white/50 font-sans text-sm tracking-widest">
+              <span className="text-[#c09b62]">{lightboxIndex + 1}</span> / {allGalleryImages.length}
+            </div>
+
+            {/* Prev Button */}
+            <button 
+              onClick={(e) => { e.stopPropagation(); setLightboxIndex(prev => prev === 0 ? allGalleryImages.length - 1 : prev - 1); }}
+              className="absolute left-4 md:left-8 z-10 w-12 h-12 rounded-full border border-white/20 flex items-center justify-center text-white hover:border-[#c09b62] hover:text-[#c09b62] transition-colors"
+            >
+              <ChevronLeft className="w-6 h-6" />
+            </button>
+
+            {/* Next Button */}
+            <button 
+              onClick={(e) => { e.stopPropagation(); setLightboxIndex(prev => prev === allGalleryImages.length - 1 ? 0 : prev + 1); }}
+              className="absolute right-4 md:right-8 z-10 w-12 h-12 rounded-full border border-white/20 flex items-center justify-center text-white hover:border-[#c09b62] hover:text-[#c09b62] transition-colors"
+            >
+              <ChevronRight className="w-6 h-6" />
+            </button>
+
+            {/* Image */}
+            <motion.div 
+              key={lightboxIndex}
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.9 }}
+              transition={{ duration: 0.3 }}
+              className="max-w-[90vw] max-h-[85vh] relative"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <img 
+                src={allGalleryImages[lightboxIndex]} 
+                alt={`Gallery ${lightboxIndex + 1}`}
+                className="max-w-full max-h-[85vh] object-contain rounded-lg shadow-2xl"
+              />
+              <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/80 to-transparent rounded-b-lg">
+                <p className="text-white text-sm font-sans tracking-widest uppercase capitalize text-center">
+                  {allGalleryImages[lightboxIndex].split('/').pop()?.replace(/-\d+-\d+\.[^.]+$/, '').replace(/[-_]/g, ' ') || 'Photo'}
+                </p>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </main>
   );
 }

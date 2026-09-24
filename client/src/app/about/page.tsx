@@ -123,9 +123,8 @@ export default async function AboutPage() {
 
       <footer className="bg-black text-[9px] text-zinc-500 uppercase tracking-[0.2em] font-sans py-24 px-6 md:px-12 border-t border-white/5 relative z-10">
         <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-8">
-          <div className="flex items-center gap-2 text-white">
-            <span className="text-xl md:text-2xl font-serif lowercase italic text-[#c09b62]">b</span>
-            <span>well</span>
+          <div className="flex items-center h-20 overflow-visible -ml-[128px]">
+            <img src="/b-well-logo.png" alt="BeWell Real Estate Logo" className="h-full w-auto object-contain drop-shadow-md flex-shrink-0 scale-[2.5] origin-left" />
           </div>
           <div>© {new Date().getFullYear()} B WELL REAL ESTATE. ALL RIGHTS RESERVED.</div>
         </div>

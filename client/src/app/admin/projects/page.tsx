@@ -12,7 +12,11 @@ interface Project {
   location: string;
   status: string;
   value: string;
+  description?: string;
   image?: string;
+  video?: string;
+  galleryImages?: string[];
+  rooms?: { name: string; images: string[] }[];
   approvalStatus?: string;
   ownerId?: string;
   isPublic?: boolean;
@@ -35,8 +39,14 @@ export default function AdminProjects() {
   const [location, setLocation] = useState("");
   const [status, setStatus] = useState("Planning");
   const [value, setValue] = useState("");
+  const [description, setDescription] = useState("");
   const [image, setImage] = useState("");
   const [isUploading, setIsUploading] = useState(false);
+  const [video, setVideo] = useState("");
+  const [galleryImages, setGalleryImages] = useState<string[]>([]);
+  const [isUploadingVideo, setIsUploadingVideo] = useState(false);
+  const [isUploadingGallery, setIsUploadingGallery] = useState(false);
+  const [rooms, setRooms] = useState<{name: string, images: string[]}[]>([]);
 
   const fetchProjects = async () => {
     try {
@@ -71,14 +81,22 @@ export default function AdminProjects() {
       setLocation(project.location);
       setStatus(project.status);
       setValue(project.value);
+      setDescription(project.description || "");
       setImage(project.image || "");
+      setVideo(project.video || "");
+      setGalleryImages(project.galleryImages || []);
+      setRooms(project.rooms || []);
     } else {
       setEditingProject(null);
       setName("");
       setLocation("");
       setStatus("Planning");
       setValue("");
+      setDescription("");
       setImage("");
+      setVideo("");
+      setGalleryImages([]);
+      setRooms([]);
     }
     setIsModalOpen(true);
   };
@@ -114,9 +132,43 @@ export default function AdminProjects() {
     }
   };
 
+  const handleVideoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setIsUploadingVideo(true);
+    const formData = new FormData();
+    formData.append("file", file);
+    try {
+      const res = await fetch("/api/upload", { method: "POST", headers: getAuthHeader(), body: formData });
+      if (res.ok) { const data = await res.json(); setVideo(data.url); }
+    } catch (error) { console.error("Failed to upload video", error); }
+    finally { setIsUploadingVideo(false); }
+  };
+
+  const handleRoomGalleryUpload = async (e: React.ChangeEvent<HTMLInputElement>, roomIndex: number) => {
+    const files = e.target.files;
+    if (!files || files.length === 0) return;
+    setIsUploadingGallery(true);
+    const urls: string[] = [];
+    for (let i = 0; i < files.length; i++) {
+      const formData = new FormData();
+      formData.append("file", files[i]);
+      try {
+        const res = await fetch("/api/upload", { method: "POST", headers: getAuthHeader(), body: formData });
+        if (res.ok) { const data = await res.json(); urls.push(data.url); }
+      } catch (error) { console.error("Failed to upload image", error); }
+    }
+    setRooms(prev => {
+      const newRooms = [...prev];
+      newRooms[roomIndex].images.push(...urls);
+      return newRooms;
+    });
+    setIsUploadingGallery(false);
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const payload = { name, location, status, value, image };
+    const payload = { name, location, status, value, description, image, video, galleryImages, rooms };
 
     try {
       if (editingProject) {
@@ -294,7 +346,7 @@ export default function AdminProjects() {
                 <X className="w-5 h-5" />
               </button>
             </div>
-            <form onSubmit={handleSubmit} className="p-6 flex flex-col gap-5">
+            <form onSubmit={handleSubmit} className="p-6 flex flex-col gap-5 max-h-[70vh] overflow-y-auto">
               <div className="flex flex-col gap-2">
                 <label className="text-xs uppercase tracking-widest text-zinc-400">Project Name</label>
                 <input 
@@ -328,6 +380,14 @@ export default function AdminProjects() {
                 />
               </div>
               <div className="flex flex-col gap-2">
+                <label className="text-xs uppercase tracking-widest text-zinc-400">Description</label>
+                <textarea 
+                  rows={4}
+                  value={description} onChange={e => setDescription(e.target.value)}
+                  className="bg-black border border-zinc-800 rounded-lg p-3 text-white focus:border-[#c09b62] outline-none transition-colors resize-none"
+                />
+              </div>
+              <div className="flex flex-col gap-2">
                 <label className="text-xs uppercase tracking-widest text-zinc-400">Project Media</label>
                 <div className="flex items-center gap-4">
                   <div className="w-16 h-16 bg-black border border-zinc-800 rounded-lg overflow-hidden flex items-center justify-center shrink-0">
@@ -353,6 +413,65 @@ export default function AdminProjects() {
                       />
                     </label>
                   </div>
+                </div>
+              </div>
+              <div className="flex flex-col gap-2">
+                <label className="text-xs uppercase tracking-widest text-zinc-400">Cover Video (Autoplay Loop)</label>
+                <div className="flex items-center gap-4">
+                  <div className="w-24 h-16 bg-black border border-zinc-800 rounded-lg overflow-hidden flex items-center justify-center shrink-0">
+                    {video ? (
+                      <video src={video} className="w-full h-full object-cover" autoPlay muted loop />
+                    ) : (
+                      <div className="text-zinc-700 text-xs">No video</div>
+                    )}
+                  </div>
+                  <div className="flex-1 flex gap-2">
+                    <label className="cursor-pointer bg-zinc-900 border border-zinc-800 px-4 py-2 rounded-lg text-xs uppercase tracking-widest hover:bg-zinc-800 transition-colors inline-block flex-1 text-center">
+                      {isUploadingVideo ? 'Uploading...' : 'Upload Video'}
+                      <input type="file" accept="video/*" className="hidden" onChange={handleVideoUpload} disabled={isUploadingVideo} />
+                    </label>
+                    {video && <button type="button" onClick={() => setVideo("")} className="text-red-400 hover:text-red-300 text-xs px-2">Remove</button>}
+                  </div>
+                </div>
+              </div>
+              <div className="flex flex-col gap-4 border-t border-zinc-800 pt-4">
+                <div className="flex justify-between items-center">
+                  <label className="text-xs uppercase tracking-widest text-zinc-400">Rooms & Galleries</label>
+                  <button type="button" onClick={() => setRooms(prev => [...prev, { name: "", images: [] }])} className="text-xs text-[#c09b62] hover:underline uppercase tracking-widest">
+                    + Add Room
+                  </button>
+                </div>
+                
+                <div className="flex flex-col gap-4 max-h-60 overflow-y-auto pr-2">
+                  {rooms.map((room, rIdx) => (
+                    <div key={rIdx} className="bg-zinc-950 border border-zinc-800 p-4 rounded-lg flex flex-col gap-3">
+                      <div className="flex justify-between items-center">
+                        <input 
+                          placeholder="Room Name (e.g. Master Bedroom)"
+                          value={room.name}
+                          onChange={e => setRooms(prev => { const n = [...prev]; n[rIdx].name = e.target.value; return n; })}
+                          className="bg-black border border-zinc-800 rounded-lg p-2 text-white focus:border-[#c09b62] outline-none transition-colors text-sm w-2/3"
+                        />
+                        <button type="button" onClick={() => setRooms(prev => prev.filter((_, i) => i !== rIdx))} className="text-xs text-red-400 hover:text-red-300">Remove</button>
+                      </div>
+                      
+                      <div className="flex flex-wrap gap-2">
+                        {room.images.map((img, idx) => (
+                          <div key={idx} className="relative w-12 h-12 bg-black border border-zinc-800 rounded-lg overflow-hidden group">
+                            <img src={img} alt="Gallery" className="w-full h-full object-cover" />
+                            <button type="button" onClick={() => setRooms(prev => { const n = [...prev]; n[rIdx].images = n[rIdx].images.filter((_, i) => i !== idx); return n; })} className="absolute inset-0 bg-red-500/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                              <X className="w-3 h-3 text-white" />
+                            </button>
+                          </div>
+                        ))}
+                      </div>
+                      
+                      <label className="cursor-pointer bg-zinc-900 border border-zinc-800 px-3 py-1.5 rounded-lg text-xs uppercase tracking-widest hover:bg-zinc-800 transition-colors inline-block text-center mt-2 w-fit">
+                        {isUploadingGallery ? 'Uploading...' : 'Add Images'}
+                        <input type="file" accept="image/*" multiple className="hidden" onChange={(e) => handleRoomGalleryUpload(e, rIdx)} disabled={isUploadingGallery} />
+                      </label>
+                    </div>
+                  ))}
                 </div>
               </div>
               <div className="mt-4 flex gap-4">

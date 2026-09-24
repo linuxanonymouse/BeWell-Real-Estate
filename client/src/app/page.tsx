@@ -28,6 +28,8 @@ interface Project {
   status: string;
   value: string;
   image?: string;
+  video?: string;
+  galleryImages?: string[];
 }
 
 interface TeamMember {
@@ -100,7 +102,7 @@ export default function Home() {
         }
         if (projectsRes.ok) {
           const data = await projectsRes.json();
-          if (Array.isArray(data) && data.length > 0) setProjects(data);
+          setProjects(Array.isArray(data) ? data : []);
         }
         if (teamRes.ok) {
           const data = await teamRes.json();
@@ -252,28 +254,41 @@ export default function Home() {
         </div>
 
         <div className="bg-black/80 backdrop-blur-md p-6 md:p-10 rounded-2xl border border-white/10 shadow-2xl">
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
-            {projects.slice(0, 5).map((project, i) => (
-              <Link href={`/projects/${project.id}`} key={project.id}>
-                <motion.div 
-                  initial={{ opacity: 0, y: 60 }} whileInView={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.1, duration: 1 }} viewport={{ once: true, margin: "-50px" }}
-                  className="w-full group cursor-pointer relative aspect-[3/4] overflow-hidden border border-white/5 shadow-lg hover:shadow-[0_0_30px_rgba(192,155,98,0.2)] transition-shadow duration-500 rounded-lg"
-                >
-                  <img src={project.image || `${process.env.NEXT_PUBLIC_BASE_PATH || ''}/project-${i % 2 === 0 ? 1 : 2}.png`} alt={project.name} className="w-full h-full object-cover opacity-80 group-hover:opacity-100 group-hover:scale-110 transition-all duration-1000 ease-out" />
-                  <div className="absolute inset-0 bg-gradient-to-t from-[#0d0a08] via-[#0d0a08]/40 to-transparent pointer-events-none" />
-                  
-                  <div className="absolute bottom-4 sm:bottom-6 left-4 sm:left-6 right-4 sm:right-6">
-                    <div className="text-[#c09b62] text-[8px] font-sans tracking-[0.3em] uppercase mb-1">{project.location}</div>
-                    <h4 className="font-serif tracking-widest text-base sm:text-lg text-white mb-1 group-hover:text-[#c09b62] transition-colors duration-500">{project.name}</h4>
-                    <p className="text-gray-300 text-[9px] font-sans tracking-[0.1em] mb-4">{project.status}</p>
-                    <div className="text-white text-[8px] font-sans tracking-[0.2em] uppercase opacity-0 -translate-y-2 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-500 flex items-center gap-2">
-                      View Project <span className="text-[#c09b62]">→</span>
+          {projects.length > 0 ? (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+              {projects.slice(0, 5).map((project, i) => (
+                <Link href={`/projects/${project.id}`} key={project.id}>
+                  <motion.div 
+                    initial={{ opacity: 0, y: 60 }} whileInView={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.1, duration: 1 }} viewport={{ once: true, margin: "-50px" }}
+                    className="w-full group cursor-pointer relative aspect-[3/4] overflow-hidden border border-white/5 shadow-lg hover:shadow-[0_0_30px_rgba(192,155,98,0.2)] transition-shadow duration-500 rounded-lg"
+                  >
+                    {project.video ? (
+                      <video src={project.video} autoPlay muted loop playsInline className="w-full h-full object-cover opacity-80 group-hover:opacity-100 group-hover:scale-110 transition-all duration-1000 ease-out" />
+                    ) : (
+                      <img src={project.image || `${process.env.NEXT_PUBLIC_BASE_PATH || ''}/project-${i % 2 === 0 ? 1 : 2}.png`} alt={project.name} className="w-full h-full object-cover opacity-80 group-hover:opacity-100 group-hover:scale-110 transition-all duration-1000 ease-out" />
+                    )}
+                    <div className="absolute inset-0 bg-gradient-to-t from-[#0d0a08] via-[#0d0a08]/40 to-transparent pointer-events-none" />
+                    
+                    <div className="absolute bottom-4 sm:bottom-6 left-4 sm:left-6 right-4 sm:right-6">
+                      <div className="text-[#c09b62] text-[8px] font-sans tracking-[0.3em] uppercase mb-1">{project.location}</div>
+                      <h4 className="font-serif tracking-widest text-base sm:text-lg text-white mb-1 group-hover:text-[#c09b62] transition-colors duration-500">{project.name}</h4>
+                      <p className="text-gray-300 text-[9px] font-sans tracking-[0.1em] mb-4">{project.status}</p>
+                      <div className="text-white text-[8px] font-sans tracking-[0.2em] uppercase opacity-0 -translate-y-2 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-500 flex items-center gap-2">
+                        View Project <span className="text-[#c09b62]">→</span>
+                      </div>
                     </div>
-                  </div>
-                </motion.div>
-              </Link>
-            ))}
-          </div>
+                  </motion.div>
+                </Link>
+              ))}
+            </div>
+          ) : (
+            <div className="py-20 flex flex-col items-center justify-center text-center border border-white/5 rounded-xl bg-white/5">
+              <h3 className="text-[#c09b62] font-serif text-2xl mb-2">Portfolio Under Development</h3>
+              <p className="text-gray-400 text-sm font-sans max-w-md tracking-wider">
+                We are currently crafting our next generation of luxury properties. Check back soon for exclusive project reveals.
+              </p>
+            </div>
+          )}
           
           <motion.div initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} transition={{ delay: 0.3 }} viewport={{ once: true }} className="mt-12 flex justify-center w-full">
             <Link href="/projects" className="px-8 py-4 border border-[#c09b62]/60 text-[10px] tracking-[0.25em] uppercase hover:bg-[#c09b62] hover:text-black text-[#c09b62] transition-colors duration-300 font-sans shadow-[0_0_15px_rgba(192,155,98,0.3)]">
@@ -306,9 +321,8 @@ export default function Home() {
 
           <div className="grid grid-cols-2 md:grid-cols-12 gap-8 md:gap-12 text-gray-300 text-[10px] font-sans tracking-widest uppercase border-t border-white/10 pt-12 md:pt-16">
             <div className="col-span-2 md:col-span-4 flex flex-col gap-6">
-              <div className="flex items-center gap-1 font-serif tracking-[0.15em] text-xl md:text-2xl font-light text-white normal-case">
-                B WELL
-                <span className="text-[#c09b62] italic text-base md:text-lg mt-1 ml-1">REAL ESTATE</span>
+              <div className="flex items-center h-20 overflow-visible -ml-[128px]">
+                <img src="/b-well-logo.png" alt="BeWell Real Estate Logo" className="h-full w-auto object-contain drop-shadow-md flex-shrink-0 scale-[2.5] origin-left" />
               </div>
               <p className="max-w-xs leading-relaxed text-[#f5eedf] normal-case tracking-wide">
                 {siteContent.footer.description}

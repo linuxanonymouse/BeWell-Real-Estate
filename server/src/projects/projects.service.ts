@@ -23,6 +23,10 @@ export interface ProjectDto {
   status: string;
   value: string;
   image?: string;
+  video?: string;
+  galleryImages?: string[];
+  rooms?: { name: string; images: string[] }[];
+  description?: string;
   materials?: MaterialDto[];
   progressUpdates?: { text: string; images: string[]; date: string }[];
   ownerId?: string;
@@ -172,6 +176,10 @@ export class ProjectsService implements OnModuleInit {
       status: doc.status,
       value: doc.value,
       image: doc.image,
+      video: doc.video,
+      description: doc.description,
+      galleryImages: doc.galleryImages || [],
+      rooms: (doc.rooms || []).map((r: any) => ({ name: r.name, images: r.images || [] })),
       materials: (doc.materials || []).map((m: any) => ({
         id: m._id.toString(),
         name: m.name,

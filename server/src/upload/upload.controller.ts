@@ -15,7 +15,8 @@ export class UploadController {
       filename: (req, file, callback) => {
         const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
         const ext = extname(file.originalname);
-        callback(null, `${uniqueSuffix}${ext}`);
+        const name = file.originalname.split('.').slice(0, -1).join('.');
+        callback(null, `${name.replace(/[^a-zA-Z0-9 ]/g, '')}-${uniqueSuffix}${ext}`);
       }
     })
   }))

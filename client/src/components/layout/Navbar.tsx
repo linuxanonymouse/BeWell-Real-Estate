@@ -89,7 +89,7 @@ export default function Navbar({ onScheduleClick }: NavbarProps) {
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 1, delay: 0.3 }}
-        className={`fixed top-0 left-0 w-full z-[100] px-6 md:px-8 py-4 flex items-center justify-between transition-all duration-700 ${
+        className={`fixed top-0 left-0 w-full z-[100] px-6 md:px-8 py-3 md:py-4 flex items-center justify-between transition-all duration-700 ${
           mobileMenuOpen
             ? 'bg-transparent border-b-transparent'
             : scrolled || pathname !== "/"
@@ -99,10 +99,9 @@ export default function Navbar({ onScheduleClick }: NavbarProps) {
       >
         <div 
           onClick={() => router.push("/")}
-          className="cursor-pointer flex items-center gap-1 font-serif tracking-[0.15em] text-base md:text-lg font-light drop-shadow-md text-white"
+          className="cursor-pointer flex items-center h-10 md:h-12 overflow-visible"
         >
-          B WELL
-          <span className="text-[#c09b62] italic text-xs md:text-sm mt-1 ml-1 drop-shadow-md">REAL ESTATE</span>
+          <img src="/b-well-logo.png" alt="BeWell Real Estate Logo" className="h-full w-auto object-contain drop-shadow-md flex-shrink-0 scale-[2] md:scale-[2.5] origin-left ml-2" />
         </div>
         
         {/* Desktop Nav */}

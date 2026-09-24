@@ -61,9 +61,9 @@ export default function LoadingScreen() {
             transition={{ duration: 1, delay: 0.5 }}
             className="mb-12 relative z-10"
           >
-            <h1 className="text-4xl font-display tracking-widest uppercase text-primary-300">
-              BeWell
-            </h1>
+            <div className="h-16 md:h-20 flex items-center justify-center overflow-visible">
+              <img src="/b-well-logo.png" alt="BeWell Real Estate Logo" className="h-full w-auto object-contain drop-shadow-md flex-shrink-0 scale-[2.5] md:scale-[3] origin-center" />
+            </div>
           </motion.div>
 
           {/* Text Cycling */}

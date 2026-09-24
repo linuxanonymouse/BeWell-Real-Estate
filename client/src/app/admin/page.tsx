@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { Building2, Users, MessageSquare, TrendingUp } from "lucide-react";
 import { getAuthHeader } from "./layout";
+import Link from "next/link";
 import { 
   PieChart, Pie, Cell, Tooltip, ResponsiveContainer, 
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Legend 
@@ -98,7 +99,8 @@ export default function AdminDashboard() {
             text: `New inquiry received from ${l.name}`,
             date: new Date(l.createdAt || Date.now()),
             type: 'lead',
-            color: 'bg-[#c09b62]'
+            color: 'bg-[#c09b62]',
+            link: '/admin/leads'
           });
         });
         projectsRes.slice(0, 5).forEach((p: any) => {
@@ -109,7 +111,8 @@ export default function AdminDashboard() {
               text: `Project ${p.name} updated`,
               date: new Date(lastUpdate.date),
               type: 'project',
-              color: 'bg-zinc-600'
+              color: 'bg-zinc-600',
+              link: `/admin/projects/${p.id}`
             });
           }
         });
@@ -223,7 +226,9 @@ export default function AdminDashboard() {
                     <p className="text-xs text-zinc-500 mt-1">{new Date(act.date).toLocaleString()}</p>
                   </div>
                 </div>
-                <button className="text-xs text-[#c09b62] hover:underline uppercase tracking-widest">View</button>
+                <Link href={act.link} className="text-xs text-[#c09b62] hover:underline uppercase tracking-widest">
+                  View
+                </Link>
               </div>
             )) : (
               <div className="p-6 text-zinc-500 text-sm">No recent activity</div>
