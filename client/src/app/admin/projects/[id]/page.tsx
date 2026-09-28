@@ -568,7 +568,7 @@ export default function ProjectResourcesPage() {
                             ) : prevChange < 0 ? (
                               <span className="text-green-400 flex items-center gap-1"><TrendingDown className="w-3 h-3" /> {prevChange.toFixed(1)}%</span>
                             ) : (
-                              <span className="text-zinc-500">—</span>
+                              <span className="text-zinc-500">-</span>
                             )}
                           </td>
                         </tr>
@@ -743,7 +743,7 @@ export default function ProjectResourcesPage() {
                                                   <span className={changeFromPrev > 0 ? 'text-red-400' : changeFromPrev < 0 ? 'text-green-400' : 'text-zinc-500'}>
                                                     {changeFromPrev > 0 ? '↑' : changeFromPrev < 0 ? '↓' : '→'} {Math.abs(changeFromPrev).toFixed(1)}%
                                                   </span>
-                                                ) : <span className="text-zinc-600">—</span>}
+                                                ) : <span className="text-zinc-600">-</span>}
                                               </td>
                                               <td className="p-2">
                                                 <span className={changeFromInit > 0 ? 'text-red-400' : changeFromInit < 0 ? 'text-green-400' : 'text-zinc-500'}>

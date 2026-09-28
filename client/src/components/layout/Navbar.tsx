@@ -101,7 +101,7 @@ export default function Navbar({ onScheduleClick }: NavbarProps) {
           onClick={() => router.push("/")}
           className="cursor-pointer flex items-center h-10 md:h-12 overflow-visible"
         >
-          <img src="/b-well-logo.png" alt="BeWell Real Estate Logo" className="h-full w-auto object-contain drop-shadow-md flex-shrink-0 scale-[2] md:scale-[2.5] origin-left ml-2" />
+          <img src="/main-logo.png" alt="BeWell Real Estate Logo" className="h-full w-auto object-contain drop-shadow-md flex-shrink-0 scale-[1.5] origin-left ml-2" />
         </div>
         
         {/* Desktop Nav */}

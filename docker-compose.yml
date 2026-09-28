@@ -14,6 +14,7 @@ services:
       - JWT_SECRET=${JWT_SECRET:-BewellSuperSecretKey2026}
       - TELEGRAM_BOT_TOKEN=${TELEGRAM_BOT_TOKEN:-}
       - OLLAMA_URL=http://ollama:11434
+      - OLLAMA_MODEL=gemma3:4b
     volumes:
       - ./server/uploads:/app/uploads
       - ./server/data:/app/data
@@ -27,7 +28,7 @@ services:
     volumes:
       - bewell_ollama_data:/root/.ollama
     # Entrypoint override to pull the model on startup, then start the server
-    entrypoint: ["/bin/sh", "-c", "ollama serve & sleep 5 && ollama pull tinyllama && wait"]
+    entrypoint: ["/bin/sh", "-c", "ollama serve & sleep 5 && ollama pull gemma3:4b && wait"]
 
   frontend:
     build:

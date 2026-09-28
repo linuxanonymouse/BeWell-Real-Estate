@@ -113,8 +113,8 @@ export default function AdminLayout({
       <div className="md:hidden bg-[#050505] border-b border-zinc-900 p-4 flex items-center justify-between sticky top-0 z-50">
         <Link href="/">
           <div className="flex items-center overflow-visible">
-            <div className="h-10 w-auto overflow-visible -ml-8 mt-2">
-              <img src="/b-well-logo.png" alt="BeWell Real Estate Logo" className="h-full w-auto object-contain flex-shrink-0 scale-[2.5] origin-left" />
+            <div className="h-8 w-auto overflow-visible">
+              <img src="/main-logo.png" alt="BeWell Real Estate Logo" className="h-full w-auto object-contain flex-shrink-0 scale-[1.5] origin-left" />
             </div>
             <span className="text-[#c09b62] italic text-xs font-serif z-10 ml-4">Admin</span>
           </div>
@@ -138,8 +138,8 @@ export default function AdminLayout({
           
           <Link href="/" className="block w-full mt-2 overflow-visible">
             <div className="flex flex-col gap-2 w-full hover:opacity-80 transition-opacity">
-              <div className="h-16 w-auto self-start overflow-visible -ml-12 mt-2">
-                <img src="/b-well-logo.png" alt="BeWell Real Estate Logo" className="h-full w-auto object-contain flex-shrink-0 scale-[2.5] origin-left" />
+              <div className="h-10 w-auto self-start overflow-visible">
+                <img src="/main-logo.png" alt="BeWell Real Estate Logo" className="h-full w-auto object-contain flex-shrink-0 scale-[1.5] origin-left" />
               </div>
               <span className="text-[#c09b62] italic text-sm font-serif relative z-10 mt-1 ml-1">Admin Portal</span>
             </div>

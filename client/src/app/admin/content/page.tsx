@@ -220,7 +220,7 @@ export default function AdminSiteContent() {
           
           {/* About Page */}
           <div className="flex flex-col gap-6">
-            <h2 className="text-[#c09b62] text-sm uppercase tracking-widest font-sans pb-2 border-b border-zinc-900">About Page — Hero</h2>
+            <h2 className="text-[#c09b62] text-sm uppercase tracking-widest font-sans pb-2 border-b border-zinc-900">About Page - Hero</h2>
             <div className="grid grid-cols-2 gap-6">
               <div className="flex flex-col gap-2">
                 <label className="text-[10px] uppercase tracking-widest text-zinc-500 font-sans">Hero Title (Gold Word)</label>
@@ -244,7 +244,7 @@ export default function AdminSiteContent() {
           </div>
 
           <div className="flex flex-col gap-6">
-            <h2 className="text-[#c09b62] text-sm uppercase tracking-widest font-sans pb-2 border-b border-zinc-900">About Page — Our Story</h2>
+            <h2 className="text-[#c09b62] text-sm uppercase tracking-widest font-sans pb-2 border-b border-zinc-900">About Page - Our Story</h2>
             <div className="grid grid-cols-1 gap-6">
               <div className="flex flex-col gap-2">
                 <label className="text-[10px] uppercase tracking-widest text-zinc-500 font-sans">Section Heading</label>
@@ -272,7 +272,7 @@ export default function AdminSiteContent() {
           </div>
 
           <div className="flex flex-col gap-6">
-            <h2 className="text-[#c09b62] text-sm uppercase tracking-widest font-sans pb-2 border-b border-zinc-900">About Page — Stats &amp; Values</h2>
+            <h2 className="text-[#c09b62] text-sm uppercase tracking-widest font-sans pb-2 border-b border-zinc-900">About Page - Stats &amp; Values</h2>
             <div className="grid grid-cols-2 gap-6">
               <div className="flex flex-col gap-2">
                 <label className="text-[10px] uppercase tracking-widest text-zinc-500 font-sans">Stat Number (e.g. 15+)</label>
@@ -331,7 +331,7 @@ export default function AdminSiteContent() {
           </div>
 
           <div className="flex flex-col gap-6">
-            <h2 className="text-[#c09b62] text-sm uppercase tracking-widest font-sans pb-2 border-b border-zinc-900">About Page — Call To Action</h2>
+            <h2 className="text-[#c09b62] text-sm uppercase tracking-widest font-sans pb-2 border-b border-zinc-900">About Page - Call To Action</h2>
             <div className="grid grid-cols-1 gap-6">
               <div className="flex flex-col gap-2">
                 <label className="text-[10px] uppercase tracking-widest text-zinc-500 font-sans">CTA Title</label>

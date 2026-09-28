@@ -62,7 +62,7 @@ export default function LoadingScreen() {
             className="mb-12 relative z-10"
           >
             <div className="h-16 md:h-20 flex items-center justify-center overflow-visible">
-              <img src="/b-well-logo.png" alt="BeWell Real Estate Logo" className="h-full w-auto object-contain drop-shadow-md flex-shrink-0 scale-[2.5] md:scale-[3] origin-center" />
+              <img src="/main-logo.png" alt="BeWell Real Estate Logo" className="h-full w-auto object-contain drop-shadow-md flex-shrink-0 scale-[1.5] md:scale-[2] origin-center" />
             </div>
           </motion.div>
 

@@ -321,8 +321,8 @@ export default function Home() {
 
           <div className="grid grid-cols-2 md:grid-cols-12 gap-8 md:gap-12 text-gray-300 text-[10px] font-sans tracking-widest uppercase border-t border-white/10 pt-12 md:pt-16">
             <div className="col-span-2 md:col-span-4 flex flex-col gap-6">
-              <div className="flex items-center h-20 overflow-visible -ml-[128px]">
-                <img src="/b-well-logo.png" alt="BeWell Real Estate Logo" className="h-full w-auto object-contain drop-shadow-md flex-shrink-0 scale-[2.5] origin-left" />
+              <div className="flex items-center h-16 overflow-visible">
+                <img src="/main-logo.png" alt="BeWell Real Estate Logo" className="h-full w-auto object-contain drop-shadow-md flex-shrink-0 scale-[1.5] origin-left" />
               </div>
               <p className="max-w-xs leading-relaxed text-[#f5eedf] normal-case tracking-wide">
                 {siteContent.footer.description}
